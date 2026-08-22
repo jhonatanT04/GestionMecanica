@@ -30,19 +30,20 @@ public class VehiculoService {
     }
 
     public Vehiculo obtenerPorPlaca(String placa) {
-        return vehiculoRepository.findByPlaca(placa)
+        return vehiculoRepository.findByPlaca(normalizarPlaca(placa))
                 .orElseThrow(() -> new ResourceNotFoundException("Vehiculo no encontrado con placa: " + placa));
     }
 
     public Vehiculo crear(Vehiculo vehiculo) {
         vehiculo.setId(null);
+        vehiculo.setPlaca(normalizarPlaca(vehiculo.getPlaca()));
         vehiculo.setCliente(resolverCliente(vehiculo.getCliente()));
         return vehiculoRepository.save(vehiculo);
     }
 
     public Vehiculo actualizar(Long id, Vehiculo datos) {
         Vehiculo vehiculo = obtener(id);
-        vehiculo.setPlaca(datos.getPlaca());
+        vehiculo.setPlaca(normalizarPlaca(datos.getPlaca()));
         vehiculo.setMarca(datos.getMarca());
         vehiculo.setModelo(datos.getModelo());
         vehiculo.setAnio(datos.getAnio());
@@ -54,6 +55,10 @@ public class VehiculoService {
     public void eliminar(Long id) {
         Vehiculo vehiculo = obtener(id);
         vehiculoRepository.delete(vehiculo);
+    }
+
+    private String normalizarPlaca(String placa) {
+        return placa == null ? null : placa.trim().toUpperCase();
     }
 
     private Cliente resolverCliente(Cliente cliente) {
