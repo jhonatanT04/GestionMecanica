@@ -1,3 +1,5 @@
+import { getSession, clearSession } from '../auth/session'
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080/api'
 
 interface ApiErrorBody {
@@ -18,13 +20,18 @@ export class ApiError extends Error {
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_BASE_URL}${path}`, {
-    headers: { 'Content-Type': 'application/json', ...init?.headers },
-    ...init,
-  })
+  const session = getSession()
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+  if (session) headers.Authorization = `Bearer ${session.token}`
+
+  const res = await fetch(`${API_BASE_URL}${path}`, { ...init, headers })
 
   if (!res.ok) {
-    // El backend responde 404/400/422 con { timestamp, status, error, message }.
+    // Token ausente/expirado/inválido: se limpia la sesión y ProtectedRoute
+    // redirige a /login en cuanto AuthContext note el cambio.
+    if (res.status === 401) clearSession()
+
+    // El backend responde 400/401/404/422 con { timestamp, status, error, message }.
     const body = (await res.json().catch(() => null)) as ApiErrorBody | null
     throw new ApiError(res.status, body?.message ?? `${init?.method ?? 'GET'} ${path} failed with ${res.status}`)
   }
