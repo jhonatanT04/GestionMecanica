@@ -5,6 +5,9 @@ spring:
     import: optional:file:.env[.properties]
   profiles:
     active: prod
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.security.autoconfigure.UserDetailsServiceAutoConfiguration
 ---
 spring:
   config:
@@ -31,3 +34,9 @@ spring:
 
 jwt:
   secret: ${JWT_SECRET_KEY}
+  expiration-ms: 28800000
+
+bootstrap:
+  admin:
+    email: ${BOOTSTRAP_ADMIN_EMAIL:}
+    password: ${BOOTSTRAP_ADMIN_PASSWORD:}
