@@ -1,7 +1,6 @@
 import type { Cliente } from '../types'
-import { clientesMock } from '../mocks/clientes'
+import { apiClient } from '../api/client'
 
-// TODO(backend Fase 1): reemplazar por apiClient.get<Cliente[]>('/clientes')
-export async function listarClientes(): Promise<Cliente[]> {
-  return clientesMock
+export function listarClientes(): Promise<Cliente[]> {
+  return apiClient.get<Cliente[]>('/clientes')
 }

@@ -1,7 +1,6 @@
 import type { Producto } from '../types'
-import { inventarioMock } from '../mocks/inventario'
+import { apiClient } from '../api/client'
 
-// TODO(backend Fase 2): reemplazar por apiClient.get<Producto[]>('/productos')
-export async function listarInventario(): Promise<Producto[]> {
-  return inventarioMock
+export function listarInventario(): Promise<Producto[]> {
+  return apiClient.get<Producto[]>('/productos')
 }
