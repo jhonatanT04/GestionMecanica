@@ -1,10 +1,19 @@
 export interface Producto {
-  id: string
-  nombre: string
+  id: number
   sku: string
-  categoria: string
-  cantidadDisponible: number
-  cantidadMinima: number
-  unidad: string
-  precioUnitario: number
+  nombre: string
+  categoria: string | null
+  stockActual: number
+  stockMinimo: number
+  precioCompra: number | null
+  precioVenta: number
+}
+
+export interface ProductoInput {
+  sku: string
+  nombre: string
+  categoria?: string | null
+  stockMinimo: number
+  precioCompra?: number | null
+  precioVenta: number
 }

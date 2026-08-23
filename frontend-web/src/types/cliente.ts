@@ -1,7 +1,14 @@
 export interface Cliente {
-  id: string
+  id: number
   nombre: string
-  telefono: string
-  email: string
-  direccion: string
+  telefono: string | null
+  email: string | null
+  direccion: string | null
+}
+
+export interface ClienteInput {
+  nombre: string
+  telefono?: string | null
+  email?: string | null
+  direccion?: string | null
 }

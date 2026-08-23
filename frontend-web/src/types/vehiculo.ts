@@ -1,9 +1,20 @@
+import type { Cliente } from './cliente'
+
 export interface Vehiculo {
-  id: string
+  id: number
   placa: string
-  marca: string
-  modelo: string
-  anio: number
-  kilometrajeActual: number
-  clienteId: string
+  marca: string | null
+  modelo: string | null
+  anio: number | null
+  kilometrajeActual: number | null
+  cliente: Cliente
+}
+
+export interface VehiculoInput {
+  placa: string
+  marca?: string | null
+  modelo?: string | null
+  anio?: number | null
+  kilometrajeActual?: number | null
+  cliente: { id: number }
 }
