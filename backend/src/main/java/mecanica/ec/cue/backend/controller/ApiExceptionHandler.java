@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import mecanica.ec.cue.backend.service.ResourceNotFoundException;
+import mecanica.ec.cue.backend.service.StockInsuficienteException;
 
 @RestControllerAdvice
 public class ApiExceptionHandler {
@@ -19,6 +20,15 @@ public class ApiExceptionHandler {
                 "timestamp", Instant.now().toString(),
                 "status", HttpStatus.NOT_FOUND.value(),
                 "error", "Not Found",
+                "message", ex.getMessage()));
+    }
+
+    @ExceptionHandler({ StockInsuficienteException.class, IllegalArgumentException.class })
+    public ResponseEntity<Map<String, Object>> handleBadRequest(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                "timestamp", Instant.now().toString(),
+                "status", HttpStatus.BAD_REQUEST.value(),
+                "error", "Bad Request",
                 "message", ex.getMessage()));
     }
 }
