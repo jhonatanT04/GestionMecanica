@@ -5,6 +5,7 @@ import { listarClientes } from '../services/clientesService'
 import { listarVehiculos } from '../services/vehiculosService'
 import { listarInventario } from '../services/inventarioService'
 import { StatusBadge } from '../components/StatusBadge'
+import { ErrorBanner } from '../components/ErrorBanner'
 import type { EstadoOrden } from '../types'
 
 const ESTADOS_ACTIVOS: EstadoOrden[] = ['RECIBIDO', 'EN_DIAGNOSTICO', 'EN_REPARACION', 'LISTO']
@@ -16,12 +17,15 @@ export function InicioPage() {
   const inventario = useAsyncData(listarInventario)
 
   const ordenesActivas = ordenes.data?.filter((o) => ESTADOS_ACTIVOS.includes(o.estado)) ?? []
-  const bajoStock = inventario.data?.filter((p) => p.cantidadDisponible < p.cantidadMinima) ?? []
-  const vehiculoPorId = new Map(vehiculos.data?.map((v) => [v.id, v]))
+  const bajoStock = inventario.data?.filter((p) => p.stockActual < p.stockMinimo) ?? []
+
+  const error = ordenes.error ?? clientes.error ?? vehiculos.error ?? inventario.error
 
   return (
     <div className="flex flex-col gap-8">
       <h1 className="text-2xl font-semibold text-gray-900">Resumen del taller</h1>
+
+      {error && <ErrorBanner error={error} />}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <ResumenCard label="Órdenes activas" value={ordenesActivas.length} />
@@ -38,21 +42,18 @@ export function InicioPage() {
           </Link>
         </div>
         <ul className="divide-y divide-gray-100">
-          {ordenesActivas.map((orden) => {
-            const vehiculo = vehiculoPorId.get(orden.vehiculoId)
-            return (
-              <li key={orden.id} className="flex items-center justify-between px-5 py-3">
-                <div>
-                  <p className="text-sm font-medium text-gray-900">
-                    {vehiculo ? `${vehiculo.marca} ${vehiculo.modelo} · ${vehiculo.placa}` : orden.vehiculoId}
-                  </p>
-                  <p className="text-sm text-gray-500">{orden.problemaReportado}</p>
-                </div>
-                <StatusBadge estado={orden.estado} />
-              </li>
-            )
-          })}
-          {ordenesActivas.length === 0 && (
+          {ordenesActivas.map((orden) => (
+            <li key={orden.id} className="flex items-center justify-between px-5 py-3">
+              <div>
+                <p className="text-sm font-medium text-gray-900">
+                  {orden.vehiculo.marca} {orden.vehiculo.modelo} · {orden.vehiculo.placa}
+                </p>
+                <p className="text-sm text-gray-500">{orden.problemaReportado}</p>
+              </div>
+              <StatusBadge estado={orden.estado} />
+            </li>
+          ))}
+          {!ordenes.loading && ordenesActivas.length === 0 && (
             <li className="px-5 py-6 text-center text-sm text-gray-500">No hay órdenes activas.</li>
           )}
         </ul>

@@ -1,17 +1,15 @@
 import { useAsyncData } from '../hooks/useAsyncData'
 import { listarInventario } from '../services/inventarioService'
+import { ErrorBanner } from '../components/ErrorBanner'
 
 export function InventarioPage() {
   const inventario = useAsyncData(listarInventario)
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-2xl font-semibold text-gray-900">Inventario</h1>
-        <p className="text-sm text-gray-500">
-          Vista de maqueta con datos de ejemplo — se conectará cuando el backend implemente la Fase 2 (repuestos).
-        </p>
-      </div>
+      <h1 className="text-2xl font-semibold text-gray-900">Inventario</h1>
+
+      {inventario.error && <ErrorBanner error={inventario.error} />}
 
       <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
         <table className="min-w-full divide-y divide-gray-200 text-sm">
@@ -20,9 +18,9 @@ export function InventarioPage() {
               <Th>Producto</Th>
               <Th>SKU</Th>
               <Th>Categoría</Th>
-              <Th>Disponible</Th>
-              <Th>Mínimo</Th>
-              <Th>Precio unitario</Th>
+              <Th>Stock actual</Th>
+              <Th>Stock mínimo</Th>
+              <Th>Precio venta</Th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -34,20 +32,18 @@ export function InventarioPage() {
               </tr>
             )}
             {inventario.data?.map((producto) => {
-              const bajoStock = producto.cantidadDisponible < producto.cantidadMinima
+              const bajoStock = producto.stockActual < producto.stockMinimo
               return (
                 <tr key={producto.id}>
                   <td className="px-4 py-3 font-medium text-gray-900">{producto.nombre}</td>
                   <td className="px-4 py-3 text-gray-600">{producto.sku}</td>
-                  <td className="px-4 py-3 text-gray-600">{producto.categoria}</td>
+                  <td className="px-4 py-3 text-gray-600">{producto.categoria ?? '—'}</td>
                   <td className={`px-4 py-3 font-medium ${bajoStock ? 'text-red-600' : 'text-gray-600'}`}>
-                    {producto.cantidadDisponible} {producto.unidad}
+                    {producto.stockActual}
                     {bajoStock ? ' ⚠' : ''}
                   </td>
-                  <td className="px-4 py-3 text-gray-600">
-                    {producto.cantidadMinima} {producto.unidad}
-                  </td>
-                  <td className="px-4 py-3 text-gray-600">${producto.precioUnitario.toFixed(2)}</td>
+                  <td className="px-4 py-3 text-gray-600">{producto.stockMinimo}</td>
+                  <td className="px-4 py-3 text-gray-600">${producto.precioVenta.toFixed(2)}</td>
                 </tr>
               )
             })}
