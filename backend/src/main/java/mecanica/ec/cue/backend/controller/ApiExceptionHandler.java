@@ -10,6 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import mecanica.ec.cue.backend.service.CredencialesInvalidasException;
 import mecanica.ec.cue.backend.service.ResourceNotFoundException;
 import mecanica.ec.cue.backend.service.StockInsuficienteException;
 
@@ -31,6 +32,15 @@ public class ApiExceptionHandler {
                 "timestamp", Instant.now().toString(),
                 "status", HttpStatus.BAD_REQUEST.value(),
                 "error", "Bad Request",
+                "message", ex.getMessage()));
+    }
+
+    @ExceptionHandler(CredencialesInvalidasException.class)
+    public ResponseEntity<Map<String, Object>> handleUnauthorized(CredencialesInvalidasException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
+                "timestamp", Instant.now().toString(),
+                "status", HttpStatus.UNAUTHORIZED.value(),
+                "error", "Unauthorized",
                 "message", ex.getMessage()));
     }
 
