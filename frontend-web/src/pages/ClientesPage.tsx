@@ -3,32 +3,37 @@ import { listarClientes } from '../services/clientesService'
 import { listarVehiculos } from '../services/vehiculosService'
 import { listarOrdenes } from '../services/ordenesService'
 import { StatusBadge } from '../components/StatusBadge'
+import { ErrorBanner } from '../components/ErrorBanner'
 
 export function ClientesPage() {
   const clientes = useAsyncData(listarClientes)
   const vehiculos = useAsyncData(listarVehiculos)
   const ordenes = useAsyncData(listarOrdenes)
 
+  const error = clientes.error ?? vehiculos.error ?? ordenes.error
+
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-2xl font-semibold text-gray-900">Clientes</h1>
 
+      {error && <ErrorBanner error={error} />}
+      {clientes.loading && <p className="text-gray-500">Cargando...</p>}
+
       <div className="flex flex-col gap-4">
-        {clientes.loading && <p className="text-gray-500">Cargando...</p>}
         {clientes.data?.map((cliente) => {
-          const vehiculosCliente = vehiculos.data?.filter((v) => v.clienteId === cliente.id) ?? []
+          const vehiculosCliente = vehiculos.data?.filter((v) => v.cliente.id === cliente.id) ?? []
           const vehiculoIds = new Set(vehiculosCliente.map((v) => v.id))
-          const ordenesCliente = ordenes.data?.filter((o) => vehiculoIds.has(o.vehiculoId)) ?? []
+          const ordenesCliente = ordenes.data?.filter((o) => vehiculoIds.has(o.vehiculo.id)) ?? []
 
           return (
             <div key={cliente.id} className="rounded-lg border border-gray-200 bg-white p-5">
               <div className="flex flex-wrap items-baseline justify-between gap-2">
                 <h2 className="text-base font-semibold text-gray-900">{cliente.nombre}</h2>
                 <p className="text-sm text-gray-500">
-                  {cliente.telefono} · {cliente.email}
+                  {cliente.telefono ?? '—'} · {cliente.email ?? '—'}
                 </p>
               </div>
-              <p className="mt-1 text-sm text-gray-500">{cliente.direccion}</p>
+              <p className="mt-1 text-sm text-gray-500">{cliente.direccion ?? '—'}</p>
 
               <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
@@ -36,7 +41,8 @@ export function ClientesPage() {
                   <ul className="flex flex-col gap-1">
                     {vehiculosCliente.map((v) => (
                       <li key={v.id} className="text-sm text-gray-700">
-                        {v.marca} {v.modelo} ({v.anio}) · {v.placa} · {v.kilometrajeActual.toLocaleString()} km
+                        {v.marca} {v.modelo} ({v.anio}) · {v.placa} · {v.kilometrajeActual?.toLocaleString() ?? '—'}{' '}
+                        km
                       </li>
                     ))}
                     {vehiculosCliente.length === 0 && (
