@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -42,6 +43,30 @@ public class ApiExceptionHandler {
                 "status", HttpStatus.UNAUTHORIZED.value(),
                 "error", "Unauthorized",
                 "message", ex.getMessage()));
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Map<String, Object>> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+        String detail = ex.getMostSpecificCause().getMessage();
+        String message = "El registro viola una restriccion de datos unicos";
+        if (detail != null) {
+            if (detail.contains("uk_usuario_email")) {
+                message = "El email ya esta en uso";
+            } else if (detail.contains("uk_vehiculo_placa")) {
+                message = "Ya existe un vehiculo con esa placa";
+            } else if (detail.contains("uk_producto_sku")) {
+                message = "Ya existe un producto con ese sku";
+            } else if (detail.contains("uk_factura_numero")) {
+                message = "Ya existe una factura con ese numero";
+            } else if (detail.contains("uk_factura_orden")) {
+                message = "Esa orden ya tiene una factura generada";
+            }
+        }
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
+                "timestamp", Instant.now().toString(),
+                "status", HttpStatus.CONFLICT.value(),
+                "error", "Conflict",
+                "message", message));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

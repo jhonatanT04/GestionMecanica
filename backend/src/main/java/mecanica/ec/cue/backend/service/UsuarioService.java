@@ -25,6 +25,9 @@ public class UsuarioService {
 
     public Usuario crear(Usuario usuario) {
         usuario.setId(null);
+        if (usuarioRepository.findByEmail(usuario.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("El email ya esta en uso");
+        }
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         return usuarioRepository.save(usuario);
     }
