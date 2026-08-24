@@ -9,7 +9,7 @@ class ApiConfig {
   // 10.0.2.2 es el alias que usa el emulador de Android para llegar al
   // localhost de la máquina host. En iOS simulator "localhost" funciona
   // directo; en un celular físico hay que apuntar a la IP LAN del backend.
-  static const defaultBaseUrl = 'http://10.0.2.2:8080';
+  static const defaultBaseUrl = 'http://127.0.0.1:8080';
 
   static const _prefsKey = 'api_base_url';
 
