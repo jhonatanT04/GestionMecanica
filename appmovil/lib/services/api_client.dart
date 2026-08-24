@@ -10,18 +10,35 @@ class ApiException implements Exception {
 
   ApiException(this.statusCode, this.body);
 
+  /// Extrae `message` del shape de error del backend
+  /// (`{timestamp,status,error,message}`); si el cuerpo no es JSON o no
+  /// trae `message`, cae al cuerpo crudo.
+  String get message {
+    try {
+      final decoded = jsonDecode(body);
+      if (decoded is Map && decoded['message'] is String) {
+        return decoded['message'] as String;
+      }
+    } catch (_) {
+      // El cuerpo no era JSON.
+    }
+    return body.isNotEmpty ? body : 'Error $statusCode';
+  }
+
   @override
   String toString() => 'ApiException($statusCode): $body';
 }
 
 /// Cliente HTTP delgado sobre la API REST del backend.
 ///
-/// Punto de extensión para auth: hoy el backend no tiene JWT, así que
-/// [authToken] queda en null y no se manda Authorization. Cuando se
-/// implemente login, basta con setear `ApiClient.authToken` tras
-/// autenticar y todas las llamadas empiezan a mandar el header.
+/// [authToken] se setea tras un login exitoso y se manda en
+/// `Authorization: Bearer` en todas las llamadas salientes. Si el backend
+/// responde 401 en una llamada que no es de login (`isAuthCall: false`),
+/// se dispara [onUnauthorized] para que la capa de UI limpie la sesión y
+/// regrese a la pantalla de login.
 class ApiClient {
   static String? authToken;
+  static void Function()? onUnauthorized;
 
   final http.Client _http = http.Client();
 
@@ -47,16 +64,19 @@ class ApiClient {
     return _decode(res);
   }
 
-  Future<dynamic> post(String path, Map<String, dynamic> body) async {
+  Future<dynamic> post(String path, Map<String, dynamic> body, {bool isAuthCall = false}) async {
     final res = await _http.post(
       await _uri(path),
       headers: _headers,
       body: jsonEncode(body),
     );
-    return _decode(res);
+    return _decode(res, isAuthCall: isAuthCall);
   }
 
-  dynamic _decode(http.Response res) {
+  dynamic _decode(http.Response res, {bool isAuthCall = false}) {
+    if (res.statusCode == 401 && !isAuthCall) {
+      onUnauthorized?.call();
+    }
     if (res.statusCode < 200 || res.statusCode >= 300) {
       throw ApiException(res.statusCode, res.body);
     }
