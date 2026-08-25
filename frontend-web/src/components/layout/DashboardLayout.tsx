@@ -8,6 +8,7 @@ const NAV_ITEMS: { to: string; label: string; end?: boolean; roles?: RolUsuario[
   { to: '/clientes', label: 'Clientes' },
   { to: '/inventario', label: 'Inventario' },
   { to: '/empleados', label: 'Empleados', roles: ['DUENO'] },
+  { to: '/reportes', label: 'Reportes', roles: ['DUENO'] },
 ]
 
 export function DashboardLayout() {
