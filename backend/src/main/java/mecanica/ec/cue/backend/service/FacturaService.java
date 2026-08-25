@@ -81,6 +81,7 @@ public class FacturaService {
     public Factura marcarComoPagada(Long id) {
         Factura factura = obtener(id);
         factura.setEstado(EstadoFactura.PAGADA);
+        factura.setFechaPago(LocalDate.now());
         return facturaRepository.save(factura);
     }
 

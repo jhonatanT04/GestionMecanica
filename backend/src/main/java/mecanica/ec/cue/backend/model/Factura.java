@@ -30,6 +30,8 @@ public class Factura {
     @Column(nullable = false)
     private LocalDate fecha;
 
+    private LocalDate fechaPago;
+
     @NotNull
     @OneToOne
     @JoinColumn(name = "orden_id", nullable = false, unique = true)
@@ -78,6 +80,14 @@ public class Factura {
 
     public void setFecha(LocalDate fecha) {
         this.fecha = fecha;
+    }
+
+    public LocalDate getFechaPago() {
+        return fechaPago;
+    }
+
+    public void setFechaPago(LocalDate fechaPago) {
+        this.fechaPago = fechaPago;
     }
 
     public OrdenDeTrabajo getOrden() {

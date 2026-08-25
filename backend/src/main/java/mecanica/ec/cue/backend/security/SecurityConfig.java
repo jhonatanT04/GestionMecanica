@@ -46,6 +46,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/usuarios").hasRole("DUENO")
                         .requestMatchers(HttpMethod.GET, "/api/usuarios").hasRole("DUENO")
+                        .requestMatchers("/api/reportes/**").hasRole("DUENO")
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().permitAll())
                 .exceptionHandling(handling -> handling
