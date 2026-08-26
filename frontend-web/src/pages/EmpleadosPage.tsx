@@ -7,7 +7,7 @@ import { Card } from '../components/ui/Card'
 import { Button } from '../components/ui/Button'
 import { Field, INPUT_CLASS } from '../components/ui/Field'
 import { Modal } from '../components/ui/Modal'
-import { Th, TableLoadingRow, TableStatusRow } from '../components/ui/Table'
+import { Th, TableHead, TableLoadingRow, TableStatusRow } from '../components/ui/Table'
 import { ROL_LABELS } from '../lib/labels'
 import type { RolUsuario } from '../types'
 
@@ -32,24 +32,24 @@ export function EmpleadosPage() {
       {usuarios.error && <ErrorBanner error={usuarios.error} />}
 
       <Card className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-slate-200 text-sm">
-          <thead className="bg-slate-50">
+        <table className="min-w-full text-sm">
+          <TableHead>
             <tr>
               <Th>Nombre</Th>
               <Th>Email</Th>
               <Th>Rol</Th>
             </tr>
-          </thead>
+          </TableHead>
           <tbody className="divide-y divide-slate-100">
             {usuarios.loading && <TableLoadingRow colSpan={COLUMN_COUNT} />}
             {!usuarios.loading && usuarios.data?.length === 0 && (
               <TableStatusRow colSpan={COLUMN_COUNT}>Todavía no hay empleados registrados</TableStatusRow>
             )}
             {usuarios.data?.map((usuario) => (
-              <tr key={usuario.id} className="hover:bg-slate-50">
-                <td className="px-4 py-3 font-medium text-slate-900">{usuario.nombre}</td>
-                <td className="px-4 py-3 text-slate-600">{usuario.email}</td>
-                <td className="px-4 py-3 text-slate-600">{ROL_LABELS[usuario.rol]}</td>
+              <tr key={usuario.id}>
+                <td className="px-4 py-4 font-medium text-slate-900">{usuario.nombre}</td>
+                <td className="px-4 py-4 text-slate-600">{usuario.email}</td>
+                <td className="px-4 py-4 text-slate-600">{ROL_LABELS[usuario.rol]}</td>
               </tr>
             ))}
           </tbody>

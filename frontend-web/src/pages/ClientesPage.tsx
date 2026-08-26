@@ -33,14 +33,14 @@ export function ClientesPage() {
         <EmptyState title="Todavía no hay clientes registrados" />
       )}
 
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col">
         {clientes.data?.map((cliente) => {
           const vehiculosCliente = vehiculos.data?.filter((v) => v.cliente.id === cliente.id) ?? []
           const vehiculoIds = new Set(vehiculosCliente.map((v) => v.id))
           const ordenesCliente = ordenes.data?.filter((o) => vehiculoIds.has(o.vehiculo.id)) ?? []
 
           return (
-            <Card key={cliente.id} className="p-5">
+            <Card key={cliente.id} className="pb-8">
               <div className="flex flex-wrap items-baseline justify-between gap-2">
                 <h2 className="text-base font-semibold text-slate-900">{cliente.nombre}</h2>
                 <p className="text-sm text-slate-500">
@@ -51,12 +51,12 @@ export function ClientesPage() {
 
               <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
-                  <p className="mb-2 text-xs font-semibold tracking-wide text-slate-500 uppercase">Vehículos</p>
+                  <p className="mb-2 text-xs font-medium tracking-wide text-slate-500 uppercase">Vehículos</p>
                   <ul className="flex flex-col gap-1">
                     {vehiculosCliente.map((v) => (
                       <li key={v.id} className="text-sm text-slate-700">
-                        {v.marca} {v.modelo} ({v.anio}) · <span className="font-mono">{v.placa}</span> ·{' '}
-                        <span className="font-mono">{v.kilometrajeActual?.toLocaleString() ?? '—'}</span> km
+                        {v.marca} {v.modelo} ({v.anio}) · {v.placa} ·{' '}
+                        <span className="tabular-nums">{v.kilometrajeActual?.toLocaleString() ?? '—'}</span> km
                       </li>
                     ))}
                     {vehiculosCliente.length === 0 && (
@@ -66,14 +66,14 @@ export function ClientesPage() {
                 </div>
 
                 <div>
-                  <p className="mb-2 text-xs font-semibold tracking-wide text-slate-500 uppercase">
+                  <p className="mb-2 text-xs font-medium tracking-wide text-slate-500 uppercase">
                     Historial de órdenes
                   </p>
                   <ul className="flex flex-col gap-2">
                     {ordenesCliente.map((o) => (
                       <li key={o.id} className="flex items-center justify-between gap-2 text-sm text-slate-700">
                         <span>
-                          <span className="font-mono">{o.fechaEntrada}</span> — {o.problemaReportado}
+                          {o.fechaEntrada} — {o.problemaReportado}
                         </span>
                         <StatusBadge estado={o.estado} />
                       </li>

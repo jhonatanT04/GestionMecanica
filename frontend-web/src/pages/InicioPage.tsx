@@ -25,12 +25,12 @@ export function InicioPage() {
   const error = ordenes.error ?? clientes.error ?? vehiculos.error ?? inventario.error
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-10">
       <PageHeader title="Resumen del taller" />
 
       {error && <ErrorBanner error={error} />}
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 divide-x divide-slate-200 border-y border-slate-200 lg:grid-cols-4">
         <ResumenCard label="Órdenes activas" value={ordenesActivas.length} />
         <ResumenCard label="Clientes registrados" value={clientes.data?.length ?? 0} />
         <ResumenCard label="Vehículos registrados" value={vehiculos.data?.length ?? 0} />
@@ -38,18 +38,18 @@ export function InicioPage() {
       </div>
 
       <Card>
-        <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+        <div className="mb-1 flex items-center justify-between">
           <h2 className="text-base font-semibold text-slate-900">Órdenes en curso</h2>
-          <Link to="/ordenes" className="text-sm font-medium text-accent-600 hover:text-accent-700 hover:underline">
+          <Link to="/ordenes" className="text-sm font-medium text-accent-600 hover:underline">
             Ver todas
           </Link>
         </div>
         <ul className="divide-y divide-slate-100">
           {ordenesActivas.map((orden) => (
-            <li key={orden.id} className="flex items-center justify-between gap-4 px-5 py-3">
+            <li key={orden.id} className="flex items-center justify-between gap-4 py-3">
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium text-slate-900">
-                  {orden.vehiculo.marca} {orden.vehiculo.modelo} · <span className="font-mono">{orden.vehiculo.placa}</span>
+                  {orden.vehiculo.marca} {orden.vehiculo.modelo} · {orden.vehiculo.placa}
                 </p>
                 <p className="truncate text-sm text-slate-500">{orden.problemaReportado}</p>
               </div>
@@ -57,13 +57,13 @@ export function InicioPage() {
             </li>
           ))}
           {ordenes.loading && (
-            <li className="flex items-center justify-center gap-2 px-5 py-10 text-sm text-slate-400">
+            <li className="flex items-center justify-center gap-2 py-10 text-sm text-slate-400">
               <Spinner />
               Cargando...
             </li>
           )}
           {!ordenes.loading && ordenesActivas.length === 0 && (
-            <li className="px-5 py-10 text-center text-sm text-slate-400">No hay órdenes activas.</li>
+            <li className="py-10 text-center text-sm text-slate-400">No hay órdenes activas.</li>
           )}
         </ul>
       </Card>
@@ -73,9 +73,11 @@ export function InicioPage() {
 
 function ResumenCard({ label, value, alert }: { label: string; value: number; alert?: boolean }) {
   return (
-    <Card className="p-5">
+    <div className="px-5 py-5 first:pl-0">
       <p className="text-sm text-slate-500">{label}</p>
-      <p className={`mt-1 font-mono text-3xl font-semibold ${alert ? 'text-red-600' : 'text-slate-900'}`}>{value}</p>
-    </Card>
+      <p className={`mt-1 text-3xl font-semibold tabular-nums ${alert ? 'text-red-600' : 'text-slate-900'}`}>
+        {value}
+      </p>
+    </div>
   )
 }

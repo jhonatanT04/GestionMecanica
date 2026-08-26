@@ -3,7 +3,7 @@ import { listarInventario } from '../services/inventarioService'
 import { ErrorBanner } from '../components/ErrorBanner'
 import { PageHeader } from '../components/ui/PageHeader'
 import { Card } from '../components/ui/Card'
-import { Th, TableLoadingRow, TableStatusRow } from '../components/ui/Table'
+import { Th, TableHead, TableLoadingRow, TableStatusRow } from '../components/ui/Table'
 
 const COLUMN_COUNT = 6
 
@@ -17,8 +17,8 @@ export function InventarioPage() {
       {inventario.error && <ErrorBanner error={inventario.error} />}
 
       <Card className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-slate-200 text-sm">
-          <thead className="bg-slate-50">
+        <table className="min-w-full text-sm">
+          <TableHead>
             <tr>
               <Th>Producto</Th>
               <Th>SKU</Th>
@@ -27,7 +27,7 @@ export function InventarioPage() {
               <Th>Stock mínimo</Th>
               <Th>Precio venta</Th>
             </tr>
-          </thead>
+          </TableHead>
           <tbody className="divide-y divide-slate-100">
             {inventario.loading && <TableLoadingRow colSpan={COLUMN_COUNT} />}
             {!inventario.loading && inventario.data?.length === 0 && (
@@ -36,20 +36,16 @@ export function InventarioPage() {
             {inventario.data?.map((producto) => {
               const bajoStock = producto.stockActual < producto.stockMinimo
               return (
-                <tr key={producto.id} className="hover:bg-slate-50">
-                  <td className="px-4 py-3 font-medium text-slate-900">{producto.nombre}</td>
-                  <td className="px-4 py-3 font-mono text-slate-600">{producto.sku}</td>
-                  <td className="px-4 py-3 text-slate-600">{producto.categoria ?? '—'}</td>
-                  <td className={`px-4 py-3 font-mono font-medium ${bajoStock ? 'text-red-600' : 'text-slate-600'}`}>
+                <tr key={producto.id}>
+                  <td className="px-4 py-4 font-medium text-slate-900">{producto.nombre}</td>
+                  <td className="px-4 py-4 text-slate-600">{producto.sku}</td>
+                  <td className="px-4 py-4 text-slate-600">{producto.categoria ?? '—'}</td>
+                  <td className={`px-4 py-4 tabular-nums ${bajoStock ? 'font-semibold text-red-600' : 'text-slate-600'}`}>
                     {producto.stockActual}
-                    {bajoStock && (
-                      <span className="ml-1.5 inline-flex items-center rounded-full bg-red-100 px-1.5 py-0.5 text-[10px] font-sans font-semibold tracking-wide text-red-700 uppercase">
-                        Bajo
-                      </span>
-                    )}
+                    {bajoStock && <span className="ml-1.5 text-xs font-medium">bajo mínimo</span>}
                   </td>
-                  <td className="px-4 py-3 font-mono text-slate-600">{producto.stockMinimo}</td>
-                  <td className="px-4 py-3 font-mono text-slate-600">${producto.precioVenta.toFixed(2)}</td>
+                  <td className="px-4 py-4 tabular-nums text-slate-600">{producto.stockMinimo}</td>
+                  <td className="px-4 py-4 tabular-nums text-slate-600">${producto.precioVenta.toFixed(2)}</td>
                 </tr>
               )
             })}

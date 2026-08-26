@@ -28,11 +28,10 @@ export function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
-      <div className="w-full max-w-sm rounded-xl border border-slate-200 bg-white p-8">
-        <div className="mb-6 flex flex-col items-center text-center">
-          <BrandMark />
-          <h1 className="mt-4 text-xl font-semibold tracking-tight text-slate-900">MecanicaSaaS</h1>
+    <div className="flex min-h-screen items-center justify-center bg-white px-4">
+      <div className="w-full max-w-xs">
+        <div className="mb-8 text-center">
+          <h1 className="text-lg font-semibold tracking-tight text-slate-900">MecanicaSaaS</h1>
           <p className="mt-1 text-sm text-slate-500">Inicia sesión para continuar</p>
         </div>
 
@@ -68,15 +67,6 @@ export function LoginPage() {
           </Button>
         </form>
       </div>
-    </div>
-  )
-}
-
-function BrandMark() {
-  return (
-    <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-accent-600">
-      <div className="h-4.5 w-1 rotate-45 rounded-full bg-white" />
-      <div className="absolute h-4.5 w-1 -rotate-45 rounded-full bg-white" />
     </div>
   )
 }

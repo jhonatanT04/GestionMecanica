@@ -5,7 +5,7 @@ import { PageHeader } from '../components/ui/PageHeader'
 import { Card } from '../components/ui/Card'
 import { Button } from '../components/ui/Button'
 import { Field, INPUT_CLASS } from '../components/ui/Field'
-import { Th, TableLoadingRow, TableStatusRow } from '../components/ui/Table'
+import { Th, TableHead, TableLoadingRow, TableStatusRow } from '../components/ui/Table'
 import { MES_LABELS } from '../lib/labels'
 import type { ReporteFiltro } from '../types'
 
@@ -60,64 +60,62 @@ export function ReportesPage() {
   }
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-10">
       <PageHeader title="Reportes de facturación" />
 
-      <Card className="p-5">
-        <form onSubmit={handleSubmit} className="flex flex-wrap items-end gap-3">
-          <div className="w-40">
-            <Field label="Desde">
-              <input
-                type="date"
-                value={desdeInput}
-                onChange={(e) => setDesdeInput(e.target.value)}
-                className={INPUT_CLASS}
-              />
-            </Field>
-          </div>
-          <div className="w-40">
-            <Field label="Hasta">
-              <input
-                type="date"
-                value={hastaInput}
-                onChange={(e) => setHastaInput(e.target.value)}
-                className={INPUT_CLASS}
-              />
-            </Field>
-          </div>
-          <Button type="submit">Filtrar</Button>
-          {(filtro.desde || filtro.hasta) && (
-            <Button type="button" variant="ghost" onClick={handleLimpiar}>
-              Limpiar filtro
-            </Button>
-          )}
-        </form>
-      </Card>
+      <form onSubmit={handleSubmit} className="flex flex-wrap items-end gap-3">
+        <div className="w-40">
+          <Field label="Desde">
+            <input
+              type="date"
+              value={desdeInput}
+              onChange={(e) => setDesdeInput(e.target.value)}
+              className={INPUT_CLASS}
+            />
+          </Field>
+        </div>
+        <div className="w-40">
+          <Field label="Hasta">
+            <input
+              type="date"
+              value={hastaInput}
+              onChange={(e) => setHastaInput(e.target.value)}
+              className={INPUT_CLASS}
+            />
+          </Field>
+        </div>
+        <Button type="submit">Filtrar</Button>
+        {(filtro.desde || filtro.hasta) && (
+          <Button type="button" variant="ghost" onClick={handleLimpiar}>
+            Limpiar filtro
+          </Button>
+        )}
+      </form>
 
       <section className="flex flex-col gap-3">
         <h2 className="text-lg font-semibold text-slate-900">Facturación por mes</h2>
         {porMes.error && <ErrorBanner error={porMes.error} />}
         <Card className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-slate-200 text-sm">
-            <thead className="bg-slate-50">
+          <table className="min-w-full text-sm">
+            <TableHead>
               <tr>
                 <Th>Mes</Th>
                 <Th>Total facturado</Th>
                 <Th>Cantidad de facturas</Th>
               </tr>
-            </thead>
+            </TableHead>
             <tbody className="divide-y divide-slate-100">
               {porMes.loading && <TableLoadingRow colSpan={COLUMN_COUNT} />}
               {!porMes.loading && porMes.data?.length === 0 && (
                 <TableStatusRow colSpan={COLUMN_COUNT}>Sin datos para el rango seleccionado</TableStatusRow>
               )}
               {porMes.data?.map((fila) => (
-                <tr key={`${fila.anio}-${fila.mes}`} className="hover:bg-slate-50">
-                  <td className="px-4 py-3 font-medium text-slate-900">
+                <tr key={`${fila.anio}-${fila.mes}`}>
+                  <td className="px-4 py-4 font-medium text-slate-900">
                     {MES_LABELS[fila.mes - 1]} {fila.anio}
                   </td>
-                  <td className="px-4 py-3 font-mono text-slate-600">{CURRENCY_FORMATTER.format(fila.totalFacturado)}</td>
-                  <td className="px-4 py-3 font-mono text-slate-600">{fila.cantidadFacturas}</td>
+                  <td className="px-4 py-4 tabular-nums text-slate-600">{CURRENCY_FORMATTER.format(fila.totalFacturado)}</td>
+                  <td className="px-4 py-4 tabular-nums text-slate-600">{fila.cantidadFacturas}</td>
                 </tr>
               ))}
             </tbody>
@@ -129,24 +127,24 @@ export function ReportesPage() {
         <h2 className="text-lg font-semibold text-slate-900">Facturación por mecánico</h2>
         {porMecanico.error && <ErrorBanner error={porMecanico.error} />}
         <Card className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-slate-200 text-sm">
-            <thead className="bg-slate-50">
+          <table className="min-w-full text-sm">
+            <TableHead>
               <tr>
                 <Th>Mecánico</Th>
                 <Th>Total facturado</Th>
                 <Th>Cantidad de facturas</Th>
               </tr>
-            </thead>
+            </TableHead>
             <tbody className="divide-y divide-slate-100">
               {porMecanico.loading && <TableLoadingRow colSpan={COLUMN_COUNT} />}
               {!porMecanico.loading && porMecanico.data?.length === 0 && (
                 <TableStatusRow colSpan={COLUMN_COUNT}>Sin datos para el rango seleccionado</TableStatusRow>
               )}
               {porMecanico.data?.map((fila) => (
-                <tr key={fila.mecanicoId ?? 'sin-asignar'} className="hover:bg-slate-50">
-                  <td className="px-4 py-3 font-medium text-slate-900">{fila.mecanicoNombre}</td>
-                  <td className="px-4 py-3 font-mono text-slate-600">{CURRENCY_FORMATTER.format(fila.totalFacturado)}</td>
-                  <td className="px-4 py-3 font-mono text-slate-600">{fila.cantidadFacturas}</td>
+                <tr key={fila.mecanicoId ?? 'sin-asignar'}>
+                  <td className="px-4 py-4 font-medium text-slate-900">{fila.mecanicoNombre}</td>
+                  <td className="px-4 py-4 tabular-nums text-slate-600">{CURRENCY_FORMATTER.format(fila.totalFacturado)}</td>
+                  <td className="px-4 py-4 tabular-nums text-slate-600">{fila.cantidadFacturas}</td>
                 </tr>
               ))}
             </tbody>

@@ -1,11 +1,17 @@
 import type { EstadoOrden } from '../types'
 
+/*
+ * Sin color por estado: la jerarquía viene del peso/tono de gris, no de
+ * una paleta semántica. RECIBIDO/EN_DIAGNOSTICO en curso normal,
+ * EN_REPARACION/LISTO en énfasis (trabajo activo o listo para entregar),
+ * ENTREGADO atenuado (archivado).
+ */
 const ESTADO_STYLES: Record<EstadoOrden, string> = {
-  RECIBIDO: 'bg-slate-100 text-slate-700',
-  EN_DIAGNOSTICO: 'bg-amber-100 text-amber-700',
-  EN_REPARACION: 'bg-accent-100 text-accent-700',
-  LISTO: 'bg-emerald-100 text-emerald-700',
-  ENTREGADO: 'bg-slate-200 text-slate-500',
+  RECIBIDO: 'text-slate-500',
+  EN_DIAGNOSTICO: 'text-slate-500',
+  EN_REPARACION: 'text-slate-900 font-semibold',
+  LISTO: 'text-slate-900 font-semibold',
+  ENTREGADO: 'text-slate-400',
 }
 
 const ESTADO_LABELS: Record<EstadoOrden, string> = {
@@ -18,9 +24,7 @@ const ESTADO_LABELS: Record<EstadoOrden, string> = {
 
 export function StatusBadge({ estado }: { estado: EstadoOrden }) {
   return (
-    <span
-      className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium whitespace-nowrap ${ESTADO_STYLES[estado]}`}
-    >
+    <span className={`text-xs tracking-wide whitespace-nowrap uppercase ${ESTADO_STYLES[estado]}`}>
       {ESTADO_LABELS[estado]}
     </span>
   )
