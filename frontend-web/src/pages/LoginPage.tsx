@@ -2,6 +2,8 @@ import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
 import { ErrorBanner } from '../components/ErrorBanner'
+import { Button } from '../components/ui/Button'
+import { Field, INPUT_CLASS } from '../components/ui/Field'
 
 export function LoginPage() {
   const { login } = useAuth()
@@ -26,10 +28,13 @@ export function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-sm rounded-lg border border-gray-200 bg-white p-8">
-        <h1 className="mb-1 text-xl font-semibold text-gray-900">MecanicaSaaS</h1>
-        <p className="mb-6 text-sm text-gray-500">Inicia sesión para continuar</p>
+    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
+      <div className="w-full max-w-sm rounded-xl border border-slate-200 bg-white p-8">
+        <div className="mb-6 flex flex-col items-center text-center">
+          <BrandMark />
+          <h1 className="mt-4 text-xl font-semibold tracking-tight text-slate-900">MecanicaSaaS</h1>
+          <p className="mt-1 text-sm text-slate-500">Inicia sesión para continuar</p>
+        </div>
 
         {error && (
           <div className="mb-4">
@@ -38,43 +43,40 @@ export function LoginPage() {
         )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div>
-            <label htmlFor="email" className="mb-1 block text-sm font-medium text-gray-700">
-              Email
-            </label>
+          <Field label="Email">
             <input
-              id="email"
               type="email"
               autoComplete="username"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+              className={INPUT_CLASS}
             />
-          </div>
-          <div>
-            <label htmlFor="password" className="mb-1 block text-sm font-medium text-gray-700">
-              Contraseña
-            </label>
+          </Field>
+          <Field label="Contraseña">
             <input
-              id="password"
               type="password"
               autoComplete="current-password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+              className={INPUT_CLASS}
             />
-          </div>
-          <button
-            type="submit"
-            disabled={loading}
-            className="mt-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
-          >
+          </Field>
+          <Button type="submit" disabled={loading} className="mt-2 w-full">
             {loading ? 'Ingresando...' : 'Ingresar'}
-          </button>
+          </Button>
         </form>
       </div>
+    </div>
+  )
+}
+
+function BrandMark() {
+  return (
+    <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-accent-600">
+      <div className="h-4.5 w-1 rotate-45 rounded-full bg-white" />
+      <div className="absolute h-4.5 w-1 -rotate-45 rounded-full bg-white" />
     </div>
   )
 }

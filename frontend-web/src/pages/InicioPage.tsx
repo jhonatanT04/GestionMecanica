@@ -6,6 +6,9 @@ import { listarVehiculos } from '../services/vehiculosService'
 import { listarInventario } from '../services/inventarioService'
 import { StatusBadge } from '../components/StatusBadge'
 import { ErrorBanner } from '../components/ErrorBanner'
+import { PageHeader } from '../components/ui/PageHeader'
+import { Card } from '../components/ui/Card'
+import { Spinner } from '../components/ui/Table'
 import type { EstadoOrden } from '../types'
 
 const ESTADOS_ACTIVOS: EstadoOrden[] = ['RECIBIDO', 'EN_DIAGNOSTICO', 'EN_REPARACION', 'LISTO']
@@ -23,7 +26,7 @@ export function InicioPage() {
 
   return (
     <div className="flex flex-col gap-8">
-      <h1 className="text-2xl font-semibold text-gray-900">Resumen del taller</h1>
+      <PageHeader title="Resumen del taller" />
 
       {error && <ErrorBanner error={error} />}
 
@@ -34,39 +37,45 @@ export function InicioPage() {
         <ResumenCard label="Productos bajo stock mínimo" value={bajoStock.length} alert={bajoStock.length > 0} />
       </div>
 
-      <section className="rounded-lg border border-gray-200 bg-white">
-        <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4">
-          <h2 className="text-base font-semibold text-gray-900">Órdenes en curso</h2>
-          <Link to="/ordenes" className="text-sm font-medium text-blue-600 hover:underline">
+      <Card>
+        <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+          <h2 className="text-base font-semibold text-slate-900">Órdenes en curso</h2>
+          <Link to="/ordenes" className="text-sm font-medium text-accent-600 hover:text-accent-700 hover:underline">
             Ver todas
           </Link>
         </div>
-        <ul className="divide-y divide-gray-100">
+        <ul className="divide-y divide-slate-100">
           {ordenesActivas.map((orden) => (
-            <li key={orden.id} className="flex items-center justify-between px-5 py-3">
-              <div>
-                <p className="text-sm font-medium text-gray-900">
-                  {orden.vehiculo.marca} {orden.vehiculo.modelo} · {orden.vehiculo.placa}
+            <li key={orden.id} className="flex items-center justify-between gap-4 px-5 py-3">
+              <div className="min-w-0">
+                <p className="truncate text-sm font-medium text-slate-900">
+                  {orden.vehiculo.marca} {orden.vehiculo.modelo} · <span className="font-mono">{orden.vehiculo.placa}</span>
                 </p>
-                <p className="text-sm text-gray-500">{orden.problemaReportado}</p>
+                <p className="truncate text-sm text-slate-500">{orden.problemaReportado}</p>
               </div>
               <StatusBadge estado={orden.estado} />
             </li>
           ))}
+          {ordenes.loading && (
+            <li className="flex items-center justify-center gap-2 px-5 py-10 text-sm text-slate-400">
+              <Spinner />
+              Cargando...
+            </li>
+          )}
           {!ordenes.loading && ordenesActivas.length === 0 && (
-            <li className="px-5 py-6 text-center text-sm text-gray-500">No hay órdenes activas.</li>
+            <li className="px-5 py-10 text-center text-sm text-slate-400">No hay órdenes activas.</li>
           )}
         </ul>
-      </section>
+      </Card>
     </div>
   )
 }
 
 function ResumenCard({ label, value, alert }: { label: string; value: number; alert?: boolean }) {
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-5">
-      <p className="text-sm text-gray-500">{label}</p>
-      <p className={`mt-1 text-3xl font-semibold ${alert ? 'text-red-600' : 'text-gray-900'}`}>{value}</p>
-    </div>
+    <Card className="p-5">
+      <p className="text-sm text-slate-500">{label}</p>
+      <p className={`mt-1 font-mono text-3xl font-semibold ${alert ? 'text-red-600' : 'text-slate-900'}`}>{value}</p>
+    </Card>
   )
 }

@@ -1,6 +1,32 @@
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+@import 'tailwindcss';
+
+/*
+ * Dirección visual: profesional/corporativo, neutros slate + un solo acento
+ * "steel teal" (evoca precisión/instrumentos, no el azul-índigo genérico de
+ * cualquier SaaS). IBM Plex Sans para UI/texto, IBM Plex Mono reservado para
+ * datos tabulares (precios, placas, SKUs, fechas) — la app gestiona un
+ * taller mecánico, así que los números leen como una hoja de especificaciones.
+ */
+@theme {
+  --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', monospace;
+
+  --color-accent-50: #eef6f7;
+  --color-accent-100: #d7ebee;
+  --color-accent-200: #b0d6dc;
+  --color-accent-300: #7fb9c3;
+  --color-accent-400: #4c97a5;
+  --color-accent-500: #2c7a8c;
+  --color-accent-600: #1e6273;
+  --color-accent-700: #174f5d;
+  --color-accent-800: #123e49;
+  --color-accent-900: #0d2c34;
+}
 
 body {
   margin: 0;
-  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
