@@ -1,9 +1,10 @@
+import { X } from '@phosphor-icons/react'
 import type { ReactNode } from 'react'
 
 export function Modal({ title, onClose, children }: { title: string; onClose: () => void; children: ReactNode }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 px-4">
-      <div className="w-full max-w-sm rounded-md border border-slate-200 bg-white p-6">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-scrim px-4">
+      <div className="w-full max-w-sm rounded-lg border border-slate-200 bg-surface p-6 shadow-xl shadow-slate-950/10">
         <div className="mb-5 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
           <button
@@ -12,9 +13,7 @@ export function Modal({ title, onClose, children }: { title: string; onClose: ()
             aria-label="Cerrar"
             className="rounded-md p-1 text-slate-400 hover:text-slate-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-600"
           >
-            <svg className="h-5 w-5" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
-              <path strokeLinecap="round" d="M5 5l10 10M15 5L5 15" />
-            </svg>
+            <X size={20} />
           </button>
         </div>
         {children}

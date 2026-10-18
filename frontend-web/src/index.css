@@ -1,12 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
 @import 'tailwindcss';
 
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
 /*
- * Dirección visual: minimalista/editorial. Una sola familia (IBM Plex Sans)
- * — la jerarquía viene de tamaño y peso, no de fuentes distintas ni de
- * mono para datos. Casi monocromo (slate); el acento "steel teal" se
- * reserva estrictamente para la acción primaria de cada pantalla y el
- * indicador de nav activo — nunca como fondo decorativo.
+ * Dirección visual: panel de administración (shell tipo CoreUI) con una
+ * sola familia (IBM Plex Sans). Neutros slate + un único acento "steel
+ * teal" para acciones primarias, nav activo y marcas de datos.
+ *
+ * Modo oscuro: en vez de duplicar cada clase con `dark:`, se re-mapea la
+ * escala slate (y los pocos tokens semánticos) bajo [data-theme='dark'].
+ * Así las páginas existentes, escritas con text-slate-900 / border-slate-200,
+ * se adaptan sin tocarlas. El tema lo resuelve lib/theme.ts antes del render.
  */
 @theme {
   --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
@@ -15,11 +20,62 @@
   --color-accent-500: #2c7a8c;
   --color-accent-600: #1e6273;
   --color-accent-700: #174f5d;
+
+  /* Superficies: page = fondo del área de contenido, surface = tarjetas. */
+  --color-page: #f3f5f8;
+  --color-surface: #ffffff;
+  --color-on-accent: #ffffff;
+  --color-scrim: rgb(15 23 42 / 0.45);
+
+  /* Sidebar: oscuro en ambos modos, como la referencia. */
+  --color-sidebar: #111a27;
+  --color-sidebar-hover: #1a2535;
+  --color-sidebar-active: #213044;
+  --color-sidebar-fg: #c4ccd8;
+  --color-sidebar-muted: #7d8899;
+  --color-sidebar-border: #223043;
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  --color-page: #0b111b;
+  --color-surface: #121a26;
+  --color-on-accent: #0b111b;
+  --color-scrim: rgb(2 6 12 / 0.7);
+  --color-sidebar: #0e1520;
+
+  --color-accent-100: #12343c;
+  --color-accent-500: #3e97ab;
+  --color-accent-600: #56aec2;
+  --color-accent-700: #74c2d3;
+
+  --color-slate-50: #101824;
+  --color-slate-100: #18212f;
+  --color-slate-200: #222d3d;
+  --color-slate-300: #324055;
+  --color-slate-400: #8492a7;
+  --color-slate-500: #9aa7b9;
+  --color-slate-600: #b1bccb;
+  --color-slate-700: #cad3df;
+  --color-slate-800: #e0e6ee;
+  --color-slate-900: #eef2f7;
+  --color-slate-950: #f7f9fc;
+
+  --color-red-50: #2a1416;
+  --color-red-200: #5a2529;
+  --color-red-600: #f07c7c;
+  --color-red-700: #f5a3a3;
+
+  --color-amber-50: #2a1f0c;
+  --color-amber-200: #5a4419;
+  --color-amber-700: #f2c46b;
 }
 
 body {
   margin: 0;
   font-family: var(--font-sans);
+  background: var(--color-page);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }

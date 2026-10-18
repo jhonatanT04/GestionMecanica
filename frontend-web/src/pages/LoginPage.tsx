@@ -28,8 +28,8 @@ export function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-white px-4">
-      <div className="w-full max-w-xs">
+    <div className="flex min-h-[100dvh] items-center justify-center bg-page px-4">
+      <div className="w-full max-w-sm rounded-lg border border-slate-200 bg-surface p-8">
         <div className="mb-8 text-center">
           <h1 className="text-lg font-semibold tracking-tight text-slate-900">MecanicaSaaS</h1>
           <p className="mt-1 text-sm text-slate-500">Inicia sesión para continuar</p>

@@ -33,7 +33,7 @@ export function ClientesPage() {
         <EmptyState title="Todavía no hay clientes registrados" />
       )}
 
-      <div className="flex flex-col">
+      <div className="flex flex-col gap-4">
         {clientes.data?.map((cliente) => {
           const vehiculosCliente = vehiculos.data?.filter((v) => v.cliente.id === cliente.id) ?? []
           const vehiculoIds = new Set(vehiculosCliente.map((v) => v.id))
