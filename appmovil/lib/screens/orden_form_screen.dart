@@ -4,6 +4,8 @@ import '../models/orden_de_trabajo.dart';
 import '../models/vehiculo.dart';
 import '../services/api_client.dart';
 import '../services/service_locator.dart';
+import '../theme/app_theme.dart';
+import '../widgets/flow_steps.dart';
 import 'orden_creada_screen.dart';
 
 class OrdenFormScreen extends StatefulWidget {
@@ -18,8 +20,9 @@ class OrdenFormScreen extends StatefulWidget {
 class _OrdenFormScreenState extends State<OrdenFormScreen> {
   final _formKey = GlobalKey<FormState>();
   late DateTime _fechaEntrada = DateTime.now();
-  late final _kmController =
-      TextEditingController(text: widget.vehiculo.kilometrajeActual.toString());
+  late final _kmController = TextEditingController(
+    text: widget.vehiculo.kilometrajeActual.toString(),
+  );
   final _problemaController = TextEditingController();
   bool _guardando = false;
 
@@ -37,12 +40,14 @@ class _OrdenFormScreenState extends State<OrdenFormScreen> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _guardando = true);
     try {
-      final orden = await ordenService.crear(OrdenDeTrabajo(
-        fechaEntrada: _fechaEntrada,
-        kilometrajeIngreso: int.parse(_kmController.text.trim()),
-        problemaReportado: _problemaController.text.trim(),
-        vehiculo: widget.vehiculo,
-      ));
+      final orden = await ordenService.crear(
+        OrdenDeTrabajo(
+          fechaEntrada: _fechaEntrada,
+          kilometrajeIngreso: int.parse(_kmController.text.trim()),
+          problemaReportado: _problemaController.text.trim(),
+          vehiculo: widget.vehiculo,
+        ),
+      );
       if (!mounted) return;
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (_) => OrdenCreadaScreen(orden: orden)),
@@ -66,35 +71,81 @@ class _OrdenFormScreenState extends State<OrdenFormScreen> {
   Widget build(BuildContext context) {
     final v = widget.vehiculo;
     return Scaffold(
-      appBar: AppBar(title: const Text('Nueva orden de trabajo')),
+      appBar: AppBar(
+        title: const Text('Orden de trabajo'),
+        bottom: const FlowSteps(actual: PasoRegistro.orden),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
           child: ListView(
             children: [
-              Text('${v.marca} ${v.modelo} (${v.anio}) · ${v.placa}',
-                  style: Theme.of(context).textTheme.titleMedium),
-              Text('Propietario: ${v.cliente.nombre}'),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.directions_car,
+                        color: AppColors.accentBright,
+                        size: 28,
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${v.marca} ${v.modelo} (${v.anio})',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              '${v.placa} · ${v.cliente.nombre}',
+                              style: const TextStyle(
+                                color: AppColors.textMuted,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
               const SizedBox(height: 16),
               ListTile(
-                contentPadding: EdgeInsets.zero,
+                tileColor: AppColors.surface,
                 title: const Text('Fecha de entrada'),
                 subtitle: Text(formatLocalDate(_fechaEntrada)),
                 trailing: const Icon(Icons.calendar_today),
                 onTap: _elegirFecha,
               ),
+              const SizedBox(height: 12),
               TextFormField(
                 controller: _kmController,
-                decoration: const InputDecoration(labelText: 'Kilometraje de ingreso'),
+                decoration: const InputDecoration(
+                  labelText: 'Kilometraje de ingreso',
+                ),
                 keyboardType: TextInputType.number,
-                validator: (val) => int.tryParse(val?.trim() ?? '') == null ? 'Kilometraje inválido' : null,
+                validator: (val) => int.tryParse(val?.trim() ?? '') == null
+                    ? 'Kilometraje inválido'
+                    : null,
               ),
+              const SizedBox(height: 12),
               TextFormField(
                 controller: _problemaController,
-                decoration: const InputDecoration(labelText: 'Problema reportado'),
+                decoration: const InputDecoration(
+                  labelText: 'Problema reportado',
+                ),
                 maxLines: 4,
-                validator: (v) => (v == null || v.trim().isEmpty) ? 'Requerido' : null,
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Requerido' : null,
               ),
               const SizedBox(height: 24),
               ElevatedButton(

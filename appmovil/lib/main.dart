@@ -4,6 +4,7 @@ import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
 import 'services/api_client.dart';
 import 'services/session_storage.dart';
+import 'theme/app_theme.dart';
 
 /// Navigator global: permite que [ApiClient.onUnauthorized] regrese a
 /// login desde fuera del árbol de widgets cuando cualquier llamada
@@ -30,7 +31,8 @@ class MecanicaSaasApp extends StatelessWidget {
     return MaterialApp(
       navigatorKey: navigatorKey,
       title: 'MecanicaSaas',
-      theme: ThemeData(colorSchemeSeed: Colors.indigo, useMaterial3: true),
+      theme: buildAppTheme(),
+      debugShowCheckedModeBanner: false,
       home: const AuthGate(),
     );
   }
@@ -49,7 +51,9 @@ class AuthGate extends StatelessWidget {
       future: SessionStorage.cargar(),
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
-          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
         }
         final sesion = snapshot.data;
         if (sesion == null) {

@@ -23,18 +23,22 @@ class _ClienteFormScreenState extends State<ClienteFormScreen> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _guardando = true);
     try {
-      final cliente = await clienteService.crear(Cliente(
-        nombre: _nombreController.text.trim(),
-        telefono: _telefonoController.text.trim(),
-        email: _emailController.text.trim(),
-        direccion: _direccionController.text.trim(),
-      ));
+      final cliente = await clienteService.crear(
+        Cliente(
+          nombre: _nombreController.text.trim(),
+          telefono: _telefonoController.text.trim(),
+          email: _emailController.text.trim(),
+          direccion: _direccionController.text.trim(),
+        ),
+      );
       if (!mounted) return;
       Navigator.of(context).pop(cliente);
     } on ApiException catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('No se pudo crear el cliente (${e.statusCode})')),
+        SnackBar(
+          content: Text('No se pudo crear el cliente (${e.statusCode})'),
+        ),
       );
       setState(() => _guardando = false);
     } catch (_) {
@@ -59,19 +63,24 @@ class _ClienteFormScreenState extends State<ClienteFormScreen> {
               TextFormField(
                 controller: _nombreController,
                 decoration: const InputDecoration(labelText: 'Nombre'),
-                validator: (v) => (v == null || v.trim().isEmpty) ? 'Requerido' : null,
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Requerido' : null,
               ),
+              const SizedBox(height: 12),
               TextFormField(
                 controller: _telefonoController,
                 decoration: const InputDecoration(labelText: 'Teléfono'),
                 keyboardType: TextInputType.phone,
-                validator: (v) => (v == null || v.trim().isEmpty) ? 'Requerido' : null,
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Requerido' : null,
               ),
+              const SizedBox(height: 12),
               TextFormField(
                 controller: _emailController,
                 decoration: const InputDecoration(labelText: 'Email'),
                 keyboardType: TextInputType.emailAddress,
               ),
+              const SizedBox(height: 12),
               TextFormField(
                 controller: _direccionController,
                 decoration: const InputDecoration(labelText: 'Dirección'),

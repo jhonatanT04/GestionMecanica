@@ -4,6 +4,8 @@ import '../models/cliente.dart';
 import '../models/vehiculo.dart';
 import '../services/api_client.dart';
 import '../services/service_locator.dart';
+import '../theme/app_theme.dart';
+import '../widgets/flow_steps.dart';
 import 'orden_form_screen.dart';
 import 'placa_scanner_screen.dart';
 import 'vehiculo_form_screen.dart';
@@ -51,7 +53,10 @@ class _VehiculoSearchScreenState extends State<VehiculoSearchScreen> {
       } else {
         final creado = await Navigator.of(context).push<Vehiculo>(
           MaterialPageRoute(
-            builder: (_) => VehiculoFormScreen(cliente: widget.cliente, placaInicial: placa),
+            builder: (_) => VehiculoFormScreen(
+              cliente: widget.cliente,
+              placaInicial: placa,
+            ),
           ),
         );
         if (creado != null) await _continuarConVehiculo(creado);
@@ -80,13 +85,16 @@ class _VehiculoSearchScreenState extends State<VehiculoSearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Vehículo de ${widget.cliente.nombre}')),
+      appBar: AppBar(
+        title: Text(widget.cliente.nombre),
+        bottom: const FlowSteps(actual: PasoRegistro.vehiculo),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            ElevatedButton.icon(
+            OutlinedButton.icon(
               onPressed: _escanear,
               icon: const Icon(Icons.camera_alt),
               label: const Text('Escanear placa con la cámara'),
@@ -98,7 +106,6 @@ class _VehiculoSearchScreenState extends State<VehiculoSearchScreen> {
               decoration: const InputDecoration(
                 labelText: 'Placa',
                 hintText: 'AAA-1234',
-                border: OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 16),
@@ -108,7 +115,7 @@ class _VehiculoSearchScreenState extends State<VehiculoSearchScreen> {
             ),
             if (_mensaje != null) ...[
               const SizedBox(height: 16),
-              Text(_mensaje!, style: const TextStyle(color: Colors.red)),
+              Text(_mensaje!, style: const TextStyle(color: AppColors.error)),
             ],
           ],
         ),

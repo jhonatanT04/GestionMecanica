@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../models/cliente.dart';
 import '../services/api_client.dart';
 import '../services/service_locator.dart';
+import '../theme/app_theme.dart';
+import '../widgets/flow_steps.dart';
 import 'cliente_form_screen.dart';
 import 'vehiculo_search_screen.dart';
 
@@ -71,13 +73,18 @@ class _ClienteSearchScreenState extends State<ClienteSearchScreen> {
     final visibles = filtroLower.isEmpty
         ? _clientes
         : _clientes
-            .where((c) =>
-                c.nombre.toLowerCase().contains(filtroLower) ||
-                c.telefono.toLowerCase().contains(filtroLower))
-            .toList();
+              .where(
+                (c) =>
+                    c.nombre.toLowerCase().contains(filtroLower) ||
+                    c.telefono.toLowerCase().contains(filtroLower),
+              )
+              .toList();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Nueva orden · Cliente')),
+      appBar: AppBar(
+        title: const Text('Nueva orden'),
+        bottom: const FlowSteps(actual: PasoRegistro.cliente),
+      ),
       body: Column(
         children: [
           Padding(
@@ -85,7 +92,6 @@ class _ClienteSearchScreenState extends State<ClienteSearchScreen> {
             child: TextField(
               decoration: const InputDecoration(
                 labelText: 'Buscar cliente por nombre o teléfono',
-                border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.search),
               ),
               onChanged: (v) => setState(() => _filtro = v),
@@ -95,29 +101,48 @@ class _ClienteSearchScreenState extends State<ClienteSearchScreen> {
             child: _cargando
                 ? const Center(child: CircularProgressIndicator())
                 : _error != null
-                    ? Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(_error!, textAlign: TextAlign.center),
-                            const SizedBox(height: 12),
-                            ElevatedButton(onPressed: _cargar, child: const Text('Reintentar')),
-                          ],
+                ? Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(_error!, textAlign: TextAlign.center),
+                        const SizedBox(height: 12),
+                        ElevatedButton(
+                          onPressed: _cargar,
+                          child: const Text('Reintentar'),
                         ),
-                      )
-                    : visibles.isEmpty
-                        ? const Center(child: Text('Sin resultados'))
-                        : ListView.builder(
-                            itemCount: visibles.length,
-                            itemBuilder: (context, i) {
-                              final c = visibles[i];
-                              return ListTile(
-                                title: Text(c.nombre),
-                                subtitle: Text(c.telefono),
-                                onTap: () => _continuarConCliente(c),
-                              );
-                            },
+                      ],
+                    ),
+                  )
+                : visibles.isEmpty
+                ? const Center(child: Text('Sin resultados'))
+                : ListView.separated(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 96),
+                    itemCount: visibles.length,
+                    separatorBuilder: (_, _) => const SizedBox(height: 8),
+                    itemBuilder: (context, i) {
+                      final c = visibles[i];
+                      return ListTile(
+                        tileColor: AppColors.surface,
+                        leading: CircleAvatar(
+                          backgroundColor: AppColors.surfaceHigh,
+                          foregroundColor: AppColors.text,
+                          child: Text(
+                            c.nombre.isNotEmpty
+                                ? c.nombre[0].toUpperCase()
+                                : '?',
                           ),
+                        ),
+                        title: Text(
+                          c.nombre,
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                        subtitle: Text(c.telefono),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () => _continuarConCliente(c),
+                      );
+                    },
+                  ),
           ),
         ],
       ),

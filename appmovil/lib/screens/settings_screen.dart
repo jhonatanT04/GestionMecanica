@@ -30,9 +30,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _guardar() async {
     await ApiConfig.setBaseUrl(_controller.text);
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('URL guardada')),
-    );
+    ScaffoldMessenger.of(context)
+        .showSnackBar(const SnackBar(content: Text('URL guardada')));
     Navigator.of(context).pop();
   }
 
@@ -55,13 +54,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   TextField(
                     controller: _controller,
                     keyboardType: TextInputType.url,
-                    decoration: const InputDecoration(
-                      labelText: 'Base URL',
-                      border: OutlineInputBorder(),
-                    ),
+                    decoration: const InputDecoration(labelText: 'Base URL'),
                   ),
                   const SizedBox(height: 16),
-                  ElevatedButton(onPressed: _guardar, child: const Text('Guardar')),
+                  ElevatedButton(
+                    onPressed: _guardar,
+                    child: const Text('Guardar'),
+                  ),
                 ],
               ),
             ),

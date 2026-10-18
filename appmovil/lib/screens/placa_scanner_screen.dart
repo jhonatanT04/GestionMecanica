@@ -5,7 +5,10 @@ import 'package:image_picker/image_picker.dart';
 /// Placas ecuatorianas: 3 letras + 3 o 4 dígitos (con o sin guion en el
 /// texto reconocido). Se normaliza a "AAA-1234" para las búsquedas.
 String? detectarPlaca(String textoReconocido) {
-  final normalizado = textoReconocido.toUpperCase().replaceAll(RegExp(r'[^A-Z0-9]'), '');
+  final normalizado = textoReconocido.toUpperCase().replaceAll(
+    RegExp(r'[^A-Z0-9]'),
+    '',
+  );
   final match = RegExp(r'[A-Z]{3}\d{3,4}').firstMatch(normalizado);
   if (match == null) return null;
   final raw = match.group(0)!;
@@ -50,7 +53,9 @@ class _PlacaScannerScreenState extends State<PlacaScannerScreen> {
       }
 
       final recognizer = TextRecognizer(script: TextRecognitionScript.latin);
-      final resultado = await recognizer.processImage(InputImage.fromFilePath(foto.path));
+      final resultado = await recognizer.processImage(
+        InputImage.fromFilePath(foto.path),
+      );
       await recognizer.close();
 
       final placaDetectada = detectarPlaca(resultado.text);
@@ -94,7 +99,9 @@ class _PlacaScannerScreenState extends State<PlacaScannerScreen> {
             ElevatedButton.icon(
               onPressed: _procesando ? null : _tomarFoto,
               icon: const Icon(Icons.camera_alt),
-              label: Text(_procesando ? 'Procesando...' : 'Tomar foto de la placa'),
+              label: Text(
+                _procesando ? 'Procesando...' : 'Tomar foto de la placa',
+              ),
             ),
             if (_procesando) ...[
               const SizedBox(height: 16),
@@ -102,7 +109,10 @@ class _PlacaScannerScreenState extends State<PlacaScannerScreen> {
             ],
             if (_mensaje != null) ...[
               const SizedBox(height: 16),
-              Text(_mensaje!, style: const TextStyle(color: Colors.red)),
+              Text(
+                _mensaje!,
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
+              ),
             ],
             const SizedBox(height: 24),
             TextField(
@@ -111,7 +121,6 @@ class _PlacaScannerScreenState extends State<PlacaScannerScreen> {
               decoration: const InputDecoration(
                 labelText: 'Placa',
                 hintText: 'AAA-1234',
-                border: OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 16),
