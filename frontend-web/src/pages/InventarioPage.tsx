@@ -1,18 +1,30 @@
+import { useState, type FormEvent } from 'react'
 import { useAsyncData } from '../hooks/useAsyncData'
-import { listarInventario } from '../services/inventarioService'
+import { crearProducto, listarInventario } from '../services/inventarioService'
 import { ErrorBanner } from '../components/ErrorBanner'
 import { PageHeader } from '../components/ui/PageHeader'
 import { Card } from '../components/ui/Card'
+import { Button } from '../components/ui/Button'
+import { Field, INPUT_CLASS } from '../components/ui/Field'
+import { Modal } from '../components/ui/Modal'
 import { Th, TableHead, TableLoadingRow, TableStatusRow } from '../components/ui/Table'
 
 const COLUMN_COUNT = 6
 
 export function InventarioPage() {
   const inventario = useAsyncData(listarInventario)
+  const [showForm, setShowForm] = useState(false)
 
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader title="Inventario" />
+      <PageHeader
+        title="Inventario"
+        action={
+          <Button type="button" onClick={() => setShowForm(true)}>
+            + Nuevo producto
+          </Button>
+        }
+      />
 
       {inventario.error && <ErrorBanner error={inventario.error} />}
 
@@ -52,6 +64,132 @@ export function InventarioPage() {
           </tbody>
         </table>
       </Card>
+
+      {showForm && (
+        <NuevoProductoModal
+          onClose={() => setShowForm(false)}
+          onCreated={() => {
+            setShowForm(false)
+            inventario.refetch()
+          }}
+        />
+      )}
     </div>
+  )
+}
+
+function NuevoProductoModal({ onClose, onCreated }: { onClose: () => void; onCreated: () => void }) {
+  const [sku, setSku] = useState('')
+  const [nombre, setNombre] = useState('')
+  const [categoria, setCategoria] = useState('')
+  const [stockActual, setStockActual] = useState('0')
+  const [stockMinimo, setStockMinimo] = useState('0')
+  const [precioCompra, setPrecioCompra] = useState('')
+  const [precioVenta, setPrecioVenta] = useState('')
+  const [error, setError] = useState<Error | null>(null)
+  const [loading, setLoading] = useState(false)
+
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault()
+    setError(null)
+    setLoading(true)
+    try {
+      await crearProducto({
+        sku,
+        nombre,
+        categoria: categoria.trim() || null,
+        stockActual: Number(stockActual),
+        stockMinimo: Number(stockMinimo),
+        precioCompra: precioCompra === '' ? null : Number(precioCompra),
+        precioVenta: Number(precioVenta),
+      })
+      onCreated()
+    } catch (err) {
+      setError(err as Error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <Modal title="Nuevo producto" onClose={onClose}>
+      {error && (
+        <div className="mb-4">
+          <ErrorBanner error={error} />
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <Field label="Nombre">
+          <input required value={nombre} onChange={(e) => setNombre(e.target.value)} className={INPUT_CLASS} />
+        </Field>
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="SKU">
+            <input
+              required
+              value={sku}
+              onChange={(e) => setSku(e.target.value.toUpperCase())}
+              className={INPUT_CLASS}
+            />
+          </Field>
+          <Field label="Categoría">
+            <input value={categoria} onChange={(e) => setCategoria(e.target.value)} className={INPUT_CLASS} />
+          </Field>
+          <Field label="Stock inicial">
+            <input
+              required
+              type="number"
+              min={0}
+              step={1}
+              value={stockActual}
+              onChange={(e) => setStockActual(e.target.value)}
+              className={INPUT_CLASS}
+            />
+          </Field>
+          <Field label="Stock mínimo">
+            <input
+              required
+              type="number"
+              min={0}
+              step={1}
+              value={stockMinimo}
+              onChange={(e) => setStockMinimo(e.target.value)}
+              className={INPUT_CLASS}
+            />
+          </Field>
+          <Field label="Precio compra">
+            <input
+              type="number"
+              min={0}
+              step="0.01"
+              placeholder="Opcional"
+              value={precioCompra}
+              onChange={(e) => setPrecioCompra(e.target.value)}
+              className={INPUT_CLASS}
+            />
+          </Field>
+          <Field label="Precio venta">
+            <input
+              required
+              type="number"
+              min={0}
+              step="0.01"
+              value={precioVenta}
+              onChange={(e) => setPrecioVenta(e.target.value)}
+              className={INPUT_CLASS}
+            />
+          </Field>
+        </div>
+
+        <div className="mt-2 flex justify-end gap-2">
+          <Button type="button" variant="ghost" onClick={onClose}>
+            Cancelar
+          </Button>
+          <Button type="submit" disabled={loading}>
+            {loading ? 'Creando...' : 'Crear'}
+          </Button>
+        </div>
+      </form>
+    </Modal>
   )
 }

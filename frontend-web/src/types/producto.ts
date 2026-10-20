@@ -13,6 +13,7 @@ export interface ProductoInput {
   sku: string
   nombre: string
   categoria?: string | null
+  stockActual?: number
   stockMinimo: number
   precioCompra?: number | null
   precioVenta: number
