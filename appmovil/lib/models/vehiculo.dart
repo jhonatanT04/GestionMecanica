@@ -1,9 +1,10 @@
 import 'cliente.dart';
+import 'marca.dart';
 
 class Vehiculo {
   final int? id;
   final String placa;
-  final String marca;
+  final Marca? marca;
   final String modelo;
   final int anio;
   final int kilometrajeActual;
@@ -12,7 +13,7 @@ class Vehiculo {
   const Vehiculo({
     this.id,
     required this.placa,
-    required this.marca,
+    this.marca,
     required this.modelo,
     required this.anio,
     required this.kilometrajeActual,
@@ -22,7 +23,9 @@ class Vehiculo {
   factory Vehiculo.fromJson(Map<String, dynamic> json) => Vehiculo(
         id: json['id'] as int?,
         placa: json['placa'] as String? ?? '',
-        marca: json['marca'] as String? ?? '',
+        marca: json['marca'] == null
+            ? null
+            : Marca.fromJson(json['marca'] as Map<String, dynamic>),
         modelo: json['modelo'] as String? ?? '',
         anio: json['anio'] as int? ?? 0,
         kilometrajeActual: json['kilometrajeActual'] as int? ?? 0,
@@ -32,7 +35,7 @@ class Vehiculo {
   Map<String, dynamic> toJson() => {
         if (id != null) 'id': id,
         'placa': placa,
-        'marca': marca,
+        'marca': marca?.toRef(),
         'modelo': modelo,
         'anio': anio,
         'kilometrajeActual': kilometrajeActual,

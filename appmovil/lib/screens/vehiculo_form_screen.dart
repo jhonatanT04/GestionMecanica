@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/cliente.dart';
+import '../models/marca.dart';
 import '../models/vehiculo.dart';
 import '../services/api_client.dart';
 import '../services/service_locator.dart';
@@ -24,7 +25,8 @@ class _VehiculoFormScreenState extends State<VehiculoFormScreen> {
   late final _placaController = TextEditingController(
     text: widget.placaInicial,
   );
-  final _marcaController = TextEditingController();
+  late final Future<List<Marca>> _marcas = marcaService.listarActivas();
+  Marca? _marca;
   final _modeloController = TextEditingController();
   final _anioController = TextEditingController();
   final _kmController = TextEditingController(text: '0');
@@ -37,7 +39,7 @@ class _VehiculoFormScreenState extends State<VehiculoFormScreen> {
       final vehiculo = await vehiculoService.crear(
         Vehiculo(
           placa: _placaController.text.trim().toUpperCase(),
-          marca: _marcaController.text.trim(),
+          marca: _marca,
           modelo: _modeloController.text.trim(),
           anio: int.parse(_anioController.text.trim()),
           kilometrajeActual: int.parse(_kmController.text.trim()),
@@ -83,11 +85,28 @@ class _VehiculoFormScreenState extends State<VehiculoFormScreen> {
                     (v == null || v.trim().isEmpty) ? 'Requerido' : null,
               ),
               const SizedBox(height: 12),
-              TextFormField(
-                controller: _marcaController,
-                decoration: const InputDecoration(labelText: 'Marca'),
-                validator: (v) =>
-                    (v == null || v.trim().isEmpty) ? 'Requerido' : null,
+              FutureBuilder<List<Marca>>(
+                future: _marcas,
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('No se pudieron cargar las marcas');
+                  }
+                  final marcas = snapshot.data;
+                  return DropdownButtonFormField<Marca>(
+                    initialValue: _marca,
+                    isExpanded: true,
+                    decoration: InputDecoration(
+                      labelText: 'Marca',
+                      hintText: marcas == null ? 'Cargando marcas...' : null,
+                    ),
+                    items: [
+                      for (final m in marcas ?? const <Marca>[])
+                        DropdownMenuItem(value: m, child: Text(m.nombre)),
+                    ],
+                    onChanged: (m) => setState(() => _marca = m),
+                    validator: (m) => m == null ? 'Requerido' : null,
+                  );
+                },
               ),
               const SizedBox(height: 12),
               TextFormField(
