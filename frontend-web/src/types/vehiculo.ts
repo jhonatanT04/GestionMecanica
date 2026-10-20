@@ -1,9 +1,10 @@
 import type { Cliente } from './cliente'
+import type { Marca } from './marca'
 
 export interface Vehiculo {
   id: number
   placa: string
-  marca: string | null
+  marca: Marca | null
   modelo: string | null
   anio: number | null
   kilometrajeActual: number | null
@@ -12,7 +13,7 @@ export interface Vehiculo {
 
 export interface VehiculoInput {
   placa: string
-  marca?: string | null
+  marca?: { id: number } | null
   modelo?: string | null
   anio?: number | null
   kilometrajeActual?: number | null

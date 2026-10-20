@@ -38,7 +38,7 @@ export function OrdenesPage() {
             {ordenes.data?.map((orden) => (
               <tr key={orden.id}>
                 <td className="px-4 py-4 font-medium text-slate-900">
-                  {orden.vehiculo.marca} {orden.vehiculo.modelo} · {orden.vehiculo.placa}
+                  {orden.vehiculo.marca?.nombre} {orden.vehiculo.modelo} · {orden.vehiculo.placa}
                 </td>
                 <td className="px-4 py-4 text-slate-600">{orden.vehiculo.cliente.nombre}</td>
                 <td className="px-4 py-4 text-slate-600">{orden.problemaReportado}</td>

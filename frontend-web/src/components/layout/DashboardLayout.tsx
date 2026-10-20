@@ -1,6 +1,7 @@
 import { useState, type ComponentType } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import {
+  Car,
   ChartBar,
   House,
   IdentificationBadge,
@@ -41,6 +42,7 @@ const NAV_SECTIONS: { title?: string; items: NavItem[] }[] = [
     items: [
       { to: '/empleados', label: 'Empleados', icon: IdentificationBadge, roles: ['DUENO'] },
       { to: '/reportes', label: 'Reportes', icon: ChartBar, roles: ['DUENO'] },
+      { to: '/marcas', label: 'Marcas', icon: Car, roles: ['DUENO'] },
     ],
   },
 ]

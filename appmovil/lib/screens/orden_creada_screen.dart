@@ -71,7 +71,7 @@ class OrdenCreadaScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 28),
                 Text(
-                  '${v.marca} ${v.modelo}',
+                  '${v.marca?.nombre ?? ''} ${v.modelo}',
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.titleLarge,
                 ),

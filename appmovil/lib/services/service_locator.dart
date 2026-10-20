@@ -1,6 +1,7 @@
 import 'api_client.dart';
 import 'auth_service.dart';
 import 'cliente_service.dart';
+import 'marca_service.dart';
 import 'orden_service.dart';
 import 'vehiculo_service.dart';
 
@@ -13,4 +14,5 @@ final apiClient = ApiClient();
 final authService = AuthService(apiClient);
 final clienteService = ClienteService(apiClient);
 final vehiculoService = VehiculoService(apiClient);
+final marcaService = MarcaService(apiClient);
 final ordenService = OrdenService(apiClient);

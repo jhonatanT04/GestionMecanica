@@ -97,7 +97,7 @@ class _OrdenFormScreenState extends State<OrdenFormScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              '${v.marca} ${v.modelo} (${v.anio})',
+                              '${v.marca?.nombre ?? ''} ${v.modelo} (${v.anio})',
                               style: const TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 16,

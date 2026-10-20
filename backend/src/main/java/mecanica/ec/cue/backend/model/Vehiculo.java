@@ -21,7 +21,9 @@ public class Vehiculo {
     @Column(nullable = false, unique = true)
     private String placa;
 
-    private String marca;
+    @ManyToOne
+    @JoinColumn(name = "marca_id")
+    private Marca marca;
 
     private String modelo;
 
@@ -50,11 +52,11 @@ public class Vehiculo {
         this.placa = placa;
     }
 
-    public String getMarca() {
+    public Marca getMarca() {
         return marca;
     }
 
-    public void setMarca(String marca) {
+    public void setMarca(Marca marca) {
         this.marca = marca;
     }
 

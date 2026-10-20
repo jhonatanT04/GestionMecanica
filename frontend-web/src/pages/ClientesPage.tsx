@@ -55,7 +55,7 @@ export function ClientesPage() {
                   <ul className="flex flex-col gap-1">
                     {vehiculosCliente.map((v) => (
                       <li key={v.id} className="text-sm text-slate-700">
-                        {v.marca} {v.modelo} ({v.anio}) · {v.placa} ·{' '}
+                        {v.marca?.nombre} {v.modelo} ({v.anio}) · {v.placa} ·{' '}
                         <span className="tabular-nums">{v.kilometrajeActual?.toLocaleString() ?? '—'}</span> km
                       </li>
                     ))}

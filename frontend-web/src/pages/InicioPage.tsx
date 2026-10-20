@@ -313,7 +313,7 @@ function OrdenesEnCurso({
             <tr key={orden.id} className="transition-colors hover:bg-slate-50">
               <td className="px-5 py-3 lg:px-6">
                 <p className="font-medium text-slate-900">
-                  {orden.vehiculo.marca} {orden.vehiculo.modelo}
+                  {orden.vehiculo.marca?.nombre} {orden.vehiculo.modelo}
                 </p>
                 <p className="text-xs text-slate-500">{orden.vehiculo.placa}</p>
               </td>

@@ -9,6 +9,7 @@ import { ClientesPage } from './pages/ClientesPage'
 import { InventarioPage } from './pages/InventarioPage'
 import { EmpleadosPage } from './pages/EmpleadosPage'
 import { ReportesPage } from './pages/ReportesPage'
+import { MarcasPage } from './pages/MarcasPage'
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           <Route element={<RequireRole roles={['DUENO']} />}>
             <Route path="/empleados" element={<EmpleadosPage />} />
             <Route path="/reportes" element={<ReportesPage />} />
+            <Route path="/marcas" element={<MarcasPage />} />
           </Route>
         </Route>
       </Route>

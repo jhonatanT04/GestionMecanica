@@ -54,6 +54,8 @@ public class ApiExceptionHandler {
                 message = "El email ya esta en uso";
             } else if (detail.contains("uk_vehiculo_placa")) {
                 message = "Ya existe un vehiculo con esa placa";
+            } else if (detail.contains("uk_marca_nombre")) {
+                message = "Ya existe una marca con ese nombre";
             } else if (detail.contains("uk_producto_sku")) {
                 message = "Ya existe un producto con ese sku";
             } else if (detail.contains("uk_factura_numero")) {
