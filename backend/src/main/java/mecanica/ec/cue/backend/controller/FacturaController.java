@@ -27,6 +27,11 @@ public class FacturaController {
         return ResponseEntity.status(HttpStatus.CREATED).body(facturaService.generar(ordenId));
     }
 
+    @GetMapping("/api/ordenes/{ordenId}/factura")
+    public Factura obtenerPorOrden(@PathVariable Long ordenId) {
+        return facturaService.obtenerPorOrden(ordenId);
+    }
+
     @GetMapping("/api/facturas")
     public List<Factura> listar() {
         return facturaService.listar();

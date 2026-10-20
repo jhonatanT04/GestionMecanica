@@ -36,6 +36,9 @@ public class ItemOrden {
 
     private String descripcion;
 
+    /** Dónde se compró un REPUESTO_EXTERNO (opcional). */
+    private String proveedor;
+
     @Column(precision = 19, scale = 2)
     private BigDecimal costo;
 
@@ -89,6 +92,14 @@ public class ItemOrden {
 
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
+    }
+
+    public String getProveedor() {
+        return proveedor;
+    }
+
+    public void setProveedor(String proveedor) {
+        this.proveedor = proveedor;
     }
 
     public BigDecimal getCosto() {

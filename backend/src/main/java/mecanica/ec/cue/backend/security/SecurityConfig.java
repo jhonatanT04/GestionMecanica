@@ -47,6 +47,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/usuarios").hasRole("DUENO")
                         .requestMatchers(HttpMethod.GET, "/api/usuarios").hasRole("DUENO")
                         .requestMatchers("/api/reportes/**").hasRole("DUENO")
+                        // Facturar y cobrar: el dueño y recepción (el mecánico solo carga items).
+                        .requestMatchers(HttpMethod.POST, "/api/ordenes/*/factura").hasAnyRole("DUENO", "RECEPCIONISTA")
+                        .requestMatchers(HttpMethod.PATCH, "/api/facturas/*/pagar").hasAnyRole("DUENO", "RECEPCIONISTA")
                         .requestMatchers(HttpMethod.POST, "/api/marcas/**").hasRole("DUENO")
                         .requestMatchers(HttpMethod.PUT, "/api/marcas/**").hasRole("DUENO")
                         .requestMatchers(HttpMethod.DELETE, "/api/marcas/**").hasRole("DUENO")

@@ -43,9 +43,12 @@ public class FacturaService {
         }
 
         List<ItemOrden> items = itemOrdenRepository.findByOrdenId(ordenId);
+        if (items.isEmpty()) {
+            throw new IllegalArgumentException("La orden " + ordenId + " no tiene items para facturar");
+        }
 
         BigDecimal subtotalRepuestos = items.stream()
-                .filter(item -> item.getTipo() == TipoItem.REPUESTO)
+                .filter(item -> item.getTipo() == TipoItem.REPUESTO || item.getTipo() == TipoItem.REPUESTO_EXTERNO)
                 .map(item -> item.getPrecioUnitario().multiply(BigDecimal.valueOf(item.getCantidad())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
@@ -67,6 +70,11 @@ public class FacturaService {
         factura.setTotal(subtotal.add(iva));
         factura.setEstado(EstadoFactura.PENDIENTE);
         return facturaRepository.save(factura);
+    }
+
+    public Factura obtenerPorOrden(Long ordenId) {
+        return facturaRepository.findByOrdenId(ordenId)
+                .orElseThrow(() -> new ResourceNotFoundException("La orden " + ordenId + " no tiene factura"));
     }
 
     public List<Factura> listar() {
