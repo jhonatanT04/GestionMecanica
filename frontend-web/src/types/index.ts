@@ -1,5 +1,6 @@
 export * from './cliente'
 export * from './vehiculo'
+export * from './marca'
 export * from './ordenDeTrabajo'
 export * from './usuario'
 export * from './producto'
