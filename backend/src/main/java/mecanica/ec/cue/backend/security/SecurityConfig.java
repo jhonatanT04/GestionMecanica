@@ -47,6 +47,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/usuarios").hasRole("DUENO")
                         .requestMatchers(HttpMethod.GET, "/api/usuarios").hasRole("DUENO")
                         .requestMatchers("/api/reportes/**").hasRole("DUENO")
+                        .requestMatchers(HttpMethod.POST, "/api/marcas/**").hasRole("DUENO")
+                        .requestMatchers(HttpMethod.PUT, "/api/marcas/**").hasRole("DUENO")
+                        .requestMatchers(HttpMethod.DELETE, "/api/marcas/**").hasRole("DUENO")
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().permitAll())
                 .exceptionHandling(handling -> handling

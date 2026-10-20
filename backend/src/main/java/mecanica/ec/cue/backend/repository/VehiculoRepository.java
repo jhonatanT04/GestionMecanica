@@ -9,4 +9,6 @@ import mecanica.ec.cue.backend.model.Vehiculo;
 public interface VehiculoRepository extends JpaRepository<Vehiculo, Long> {
 
     Optional<Vehiculo> findByPlaca(String placa);
+
+    boolean existsByMarcaId(Long marcaId);
 }
