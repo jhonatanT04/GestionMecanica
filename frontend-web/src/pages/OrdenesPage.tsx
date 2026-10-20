@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { useAsyncData } from '../hooks/useAsyncData'
 import { listarOrdenes } from '../services/ordenesService'
 import { StatusBadge } from '../components/StatusBadge'
@@ -6,7 +7,7 @@ import { PageHeader } from '../components/ui/PageHeader'
 import { Card } from '../components/ui/Card'
 import { Th, TableHead, TableLoadingRow, TableStatusRow } from '../components/ui/Table'
 
-const COLUMN_COUNT = 7
+const COLUMN_COUNT = 8
 
 export function OrdenesPage() {
   const ordenes = useAsyncData(listarOrdenes)
@@ -28,6 +29,9 @@ export function OrdenesPage() {
               <Th>Entrada</Th>
               <Th>Salida estimada</Th>
               <Th>Estado</Th>
+              <Th>
+                <span className="sr-only">Acciones</span>
+              </Th>
             </tr>
           </TableHead>
           <tbody className="divide-y divide-slate-100">
@@ -47,6 +51,14 @@ export function OrdenesPage() {
                 <td className="px-4 py-4 tabular-nums text-slate-600">{orden.fechaEstimadaSalida ?? '—'}</td>
                 <td className="px-4 py-4">
                   <StatusBadge estado={orden.estado} />
+                </td>
+                <td className="px-4 py-4 text-right">
+                  <Link
+                    to={`/ordenes/${orden.id}`}
+                    className="rounded-md text-sm font-medium whitespace-nowrap text-accent-600 hover:text-accent-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-600"
+                  >
+                    Items y factura
+                  </Link>
                 </td>
               </tr>
             ))}

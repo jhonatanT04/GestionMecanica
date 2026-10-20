@@ -10,6 +10,8 @@ import { InventarioPage } from './pages/InventarioPage'
 import { EmpleadosPage } from './pages/EmpleadosPage'
 import { ReportesPage } from './pages/ReportesPage'
 import { MarcasPage } from './pages/MarcasPage'
+import { FacturacionOrdenPage } from './pages/FacturacionOrdenPage'
+import { FacturasPage } from './pages/FacturasPage'
 
 function App() {
   return (
@@ -19,8 +21,12 @@ function App() {
         <Route element={<DashboardLayout />}>
           <Route path="/" element={<InicioPage />} />
           <Route path="/ordenes" element={<OrdenesPage />} />
+          <Route path="/ordenes/:id" element={<FacturacionOrdenPage />} />
           <Route path="/clientes" element={<ClientesPage />} />
           <Route path="/inventario" element={<InventarioPage />} />
+          <Route element={<RequireRole roles={['DUENO', 'RECEPCIONISTA']} />}>
+            <Route path="/facturacion" element={<FacturasPage />} />
+          </Route>
           <Route element={<RequireRole roles={['DUENO']} />}>
             <Route path="/empleados" element={<EmpleadosPage />} />
             <Route path="/reportes" element={<ReportesPage />} />

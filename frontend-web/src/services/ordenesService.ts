@@ -4,3 +4,7 @@ import { apiClient } from '../api/client'
 export function listarOrdenes(): Promise<OrdenDeTrabajo[]> {
   return apiClient.get<OrdenDeTrabajo[]>('/ordenes')
 }
+
+export function obtenerOrden(id: number): Promise<OrdenDeTrabajo> {
+  return apiClient.get<OrdenDeTrabajo>(`/ordenes/${id}`)
+}

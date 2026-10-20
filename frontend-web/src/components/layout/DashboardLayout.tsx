@@ -8,6 +8,7 @@ import {
   List,
   Moon,
   Package,
+  Receipt,
   SignOut,
   Sun,
   Users,
@@ -33,6 +34,7 @@ const NAV_SECTIONS: { title?: string; items: NavItem[] }[] = [
     items: [
       { to: '/', label: 'Inicio', icon: House, end: true },
       { to: '/ordenes', label: 'Órdenes', icon: Wrench },
+      { to: '/facturacion', label: 'Facturación', icon: Receipt, roles: ['DUENO', 'RECEPCIONISTA'] },
       { to: '/clientes', label: 'Clientes', icon: Users },
       { to: '/inventario', label: 'Inventario', icon: Package },
     ],
