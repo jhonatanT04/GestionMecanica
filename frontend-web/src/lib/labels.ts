@@ -1,9 +1,9 @@
 import type { EstadoOrden, RolUsuario } from '../types'
 
 export const ROL_LABELS: Record<RolUsuario, string> = {
-  DUENO: 'Dueño',
+  ADMIN: 'Administrador',
   MECANICO: 'Mecánico',
-  RECEPCIONISTA: 'Recepcionista',
+  CAJA: 'Caja',
 }
 
 export const MES_LABELS = [

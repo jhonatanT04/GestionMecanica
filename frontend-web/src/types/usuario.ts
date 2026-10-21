@@ -1,4 +1,4 @@
-export type RolUsuario = 'DUENO' | 'MECANICO' | 'RECEPCIONISTA'
+export type RolUsuario = 'ADMIN' | 'MECANICO' | 'CAJA'
 
 export interface Usuario {
   id: number

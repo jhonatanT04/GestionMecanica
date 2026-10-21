@@ -24,11 +24,11 @@ function App() {
           <Route path="/ordenes" element={<OrdenesPage />} />
           <Route path="/ordenes/:id" element={<FacturacionOrdenPage />} />
           <Route path="/clientes" element={<ClientesPage />} />
-          <Route path="/inventario" element={<InventarioPage />} />
-          <Route element={<RequireRole roles={['DUENO', 'RECEPCIONISTA']} />}>
+          <Route element={<RequireRole roles={['ADMIN', 'CAJA']} />}>
+            <Route path="/inventario" element={<InventarioPage />} />
             <Route path="/facturacion" element={<FacturasPage />} />
           </Route>
-          <Route element={<RequireRole roles={['DUENO']} />}>
+          <Route element={<RequireRole roles={['ADMIN']} />}>
             <Route path="/empleados" element={<EmpleadosPage />} />
             <Route path="/reportes" element={<ReportesPage />} />
             <Route path="/marcas" element={<MarcasPage />} />

@@ -11,7 +11,7 @@ import { Th, TableHead, TableLoadingRow, TableStatusRow } from '../components/ui
 import { ROL_LABELS } from '../lib/labels'
 import type { RolUsuario } from '../types'
 
-const ROLES: RolUsuario[] = ['DUENO', 'MECANICO', 'RECEPCIONISTA']
+const ROLES: RolUsuario[] = ['ADMIN', 'MECANICO', 'CAJA']
 const COLUMN_COUNT = 3
 
 export function EmpleadosPage() {

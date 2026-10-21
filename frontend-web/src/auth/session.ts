@@ -12,12 +12,23 @@ type Listener = (session: Session | null) => void
 
 const listeners = new Set<Listener>()
 
+/**
+ * Sesiones guardadas antes del cambio de roles traen DUENO/RECEPCIONISTA.
+ * Se traducen para no forzar un nuevo login (el backend hace lo mismo con el token).
+ */
+function rolActual(rol: string): Usuario['rol'] {
+  if (rol === 'DUENO') return 'ADMIN'
+  if (rol === 'RECEPCIONISTA') return 'CAJA'
+  return rol as Usuario['rol']
+}
+
 function readSession(): Session | null {
   const token = localStorage.getItem(TOKEN_KEY)
   const usuarioRaw = localStorage.getItem(USUARIO_KEY)
   if (!token || !usuarioRaw) return null
   try {
-    return { token, usuario: JSON.parse(usuarioRaw) as Usuario }
+    const usuario = JSON.parse(usuarioRaw) as Usuario
+    return { token, usuario: { ...usuario, rol: rolActual(usuario.rol) } }
   } catch {
     return null
   }

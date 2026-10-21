@@ -24,7 +24,7 @@ import { Modal } from '../components/ui/Modal'
 import { Th, TableHead, TableLoadingRow, TableStatusRow } from '../components/ui/Table'
 import type { Factura, ItemOrden, ItemOrdenInput, RolUsuario, TipoItem } from '../types'
 
-const ROLES_QUE_FACTURAN: RolUsuario[] = ['DUENO', 'RECEPCIONISTA']
+const ROLES_QUE_FACTURAN: RolUsuario[] = ['ADMIN', 'CAJA']
 const CURRENCY = new Intl.NumberFormat('es-EC', { style: 'currency', currency: 'USD' })
 const COLUMN_COUNT = 6
 
@@ -296,7 +296,7 @@ function FacturaCard({
       <Card>
         <CardHeader title="Factura" />
         <p className="text-sm text-slate-500">
-          No hay una tarifa de IVA vigente. El dueño debe registrarla en Configuración antes de facturar.
+          No hay una tarifa de IVA vigente. El administrador debe registrarla en Configuración antes de facturar.
         </p>
       </Card>
     )
@@ -341,7 +341,7 @@ function FacturaCard({
 
       <div className="mt-5">
         {!puedeFacturar ? (
-          <p className="text-sm text-slate-500">Solo el dueño o recepción pueden facturar y registrar pagos.</p>
+          <p className="text-sm text-slate-500">Solo administración o caja pueden facturar y registrar pagos.</p>
         ) : factura ? (
           factura.estado === 'PENDIENTE' && (
             <Button type="button" className="w-full" disabled={procesando} onClick={() => onPagar(factura.id)}>

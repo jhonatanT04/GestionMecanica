@@ -35,18 +35,18 @@ const NAV_SECTIONS: { title?: string; items: NavItem[] }[] = [
     items: [
       { to: '/', label: 'Inicio', icon: House, end: true },
       { to: '/ordenes', label: 'Órdenes', icon: Wrench },
-      { to: '/facturacion', label: 'Facturación', icon: Receipt, roles: ['DUENO', 'RECEPCIONISTA'] },
+      { to: '/facturacion', label: 'Facturación', icon: Receipt, roles: ['ADMIN', 'CAJA'] },
       { to: '/clientes', label: 'Clientes', icon: Users },
-      { to: '/inventario', label: 'Inventario', icon: Package },
+      { to: '/inventario', label: 'Inventario', icon: Package, roles: ['ADMIN', 'CAJA'] },
     ],
   },
   {
     title: 'Administración',
     items: [
-      { to: '/empleados', label: 'Empleados', icon: IdentificationBadge, roles: ['DUENO'] },
-      { to: '/reportes', label: 'Reportes', icon: ChartBar, roles: ['DUENO'] },
-      { to: '/marcas', label: 'Marcas', icon: Car, roles: ['DUENO'] },
-      { to: '/configuracion', label: 'Configuración', icon: GearSix, roles: ['DUENO'] },
+      { to: '/empleados', label: 'Empleados', icon: IdentificationBadge, roles: ['ADMIN'] },
+      { to: '/reportes', label: 'Reportes', icon: ChartBar, roles: ['ADMIN'] },
+      { to: '/marcas', label: 'Marcas', icon: Car, roles: ['ADMIN'] },
+      { to: '/configuracion', label: 'Configuración', icon: GearSix, roles: ['ADMIN'] },
     ],
   },
 ]

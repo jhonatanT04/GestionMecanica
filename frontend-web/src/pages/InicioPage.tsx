@@ -5,6 +5,7 @@ import {
   ArrowRight,
   ArrowUpRight,
   CheckCircle,
+  HardHat,
   Package,
   Users,
   Warning,
@@ -40,7 +41,9 @@ const FECHA = new Intl.DateTimeFormat('es-EC', { day: 'numeric', month: 'short' 
 
 export function InicioPage() {
   const { session } = useAuth()
-  const esDueno = session?.usuario.rol === 'DUENO'
+  const esAdmin = session?.usuario.rol === 'ADMIN'
+  // El mecánico no gestiona inventario: en su lugar ve las órdenes que tiene asignadas.
+  const esMecanico = session?.usuario.rol === 'MECANICO'
 
   const ordenes = useAsyncData(listarOrdenes)
   const clientes = useAsyncData(listarClientes)
@@ -49,6 +52,7 @@ export function InicioPage() {
   const ordenesActivas = ordenes.data?.filter((o) => ESTADOS_ACTIVOS.includes(o.estado)) ?? []
   const listas = ordenesActivas.filter((o) => o.estado === 'LISTO')
   const bajoStock = inventario.data?.filter((p) => p.stockActual < p.stockMinimo) ?? []
+  const asignadasAMi = ordenesActivas.filter((o) => o.mecanicoAsignado?.id === session?.usuario.id)
 
   const error = ordenes.error ?? clientes.error ?? inventario.error
 
@@ -62,6 +66,9 @@ export function InicioPage() {
         <StatTile label="Órdenes activas" value={ordenesActivas.length} loading={ordenes.loading} icon={Wrench} />
         <StatTile label="Listas para entregar" value={listas.length} loading={ordenes.loading} icon={CheckCircle} />
         <StatTile label="Clientes registrados" value={clientes.data?.length ?? 0} loading={clientes.loading} icon={Users} />
+        {esMecanico ? (
+          <StatTile label="Asignadas a mí" value={asignadasAMi.length} loading={ordenes.loading} icon={HardHat} />
+        ) : (
         <StatTile
           label="Productos bajo stock mínimo"
           value={bajoStock.length}
@@ -76,11 +83,12 @@ export function InicioPage() {
             ) : null
           }
         />
+        )}
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="flex min-w-0 flex-col gap-6 lg:col-span-2">
-          {esDueno && <FacturacionCard />}
+          {esAdmin && <FacturacionCard />}
 
           <Card className="px-0 pb-2 lg:px-0">
             <div className="px-5 lg:px-6">
@@ -109,6 +117,7 @@ export function InicioPage() {
             )}
           </Card>
 
+          {!esMecanico && (
           <Card>
             <CardHeader title="Bajo stock mínimo" action={<VerTodo to="/inventario" label="Ver inventario" />} />
             {inventario.loading ? (
@@ -131,6 +140,7 @@ export function InicioPage() {
               </ul>
             )}
           </Card>
+          )}
         </div>
       </div>
     </div>

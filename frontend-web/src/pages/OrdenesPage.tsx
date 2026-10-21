@@ -1,20 +1,38 @@
-import { Link } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../auth/useAuth'
 import { useAsyncData } from '../hooks/useAsyncData'
 import { listarOrdenes } from '../services/ordenesService'
 import { StatusBadge } from '../components/StatusBadge'
 import { ErrorBanner } from '../components/ErrorBanner'
 import { PageHeader } from '../components/ui/PageHeader'
 import { Card } from '../components/ui/Card'
+import { Button } from '../components/ui/Button'
+import { NuevaOrdenModal } from '../components/NuevaOrdenModal'
 import { Th, TableHead, TableLoadingRow, TableStatusRow } from '../components/ui/Table'
 
 const COLUMN_COUNT = 8
 
 export function OrdenesPage() {
   const ordenes = useAsyncData(listarOrdenes)
+  const { session } = useAuth()
+  const navigate = useNavigate()
+  const [creando, setCreando] = useState(false)
+  // En la web solo el mecánico abre órdenes; caja las registra desde la app móvil.
+  const puedeCrear = session?.usuario.rol === 'MECANICO'
 
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader title="Órdenes de trabajo" />
+      <PageHeader
+        title="Órdenes de trabajo"
+        action={
+          puedeCrear ? (
+            <Button type="button" onClick={() => setCreando(true)}>
+              + Nueva orden
+            </Button>
+          ) : undefined
+        }
+      />
 
       {ordenes.error && <ErrorBanner error={ordenes.error} />}
 
@@ -65,6 +83,14 @@ export function OrdenesPage() {
           </tbody>
         </table>
       </Card>
+
+      {creando && session && (
+        <NuevaOrdenModal
+          mecanicoId={session.usuario.id}
+          onClose={() => setCreando(false)}
+          onCreada={(orden) => navigate(`/ordenes/${orden.id}`)}
+        />
+      )}
     </div>
   )
 }
