@@ -5,4 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import mecanica.ec.cue.backend.model.Cliente;
 
 public interface ClienteRepository extends JpaRepository<Cliente, Long> {
+
+    boolean existsByCedula(String cedula);
+
+    boolean existsByCedulaAndIdNot(String cedula, Long id);
 }

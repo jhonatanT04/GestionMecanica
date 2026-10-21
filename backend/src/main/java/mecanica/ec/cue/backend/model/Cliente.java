@@ -1,5 +1,7 @@
 package mecanica.ec.cue.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,7 +19,15 @@ public class Cliente {
 
     @NotBlank
     @Column(nullable = false)
-    private String nombre;
+    private String nombres;
+
+    @NotBlank
+    @Column(nullable = false)
+    private String apellidos;
+
+    /** Cédula ecuatoriana de 10 dígitos. Clientes anteriores a V11 pueden no tenerla. */
+    @Column(length = 10, unique = true)
+    private String cedula;
 
     private String telefono;
 
@@ -34,12 +44,34 @@ public class Cliente {
         this.id = id;
     }
 
-    public String getNombre() {
-        return nombre;
+    public String getNombres() {
+        return nombres;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setNombres(String nombres) {
+        this.nombres = nombres;
+    }
+
+    public String getApellidos() {
+        return apellidos;
+    }
+
+    public void setApellidos(String apellidos) {
+        this.apellidos = apellidos;
+    }
+
+    public String getCedula() {
+        return cedula;
+    }
+
+    public void setCedula(String cedula) {
+        this.cedula = cedula;
+    }
+
+    /** "Nombres Apellidos", para mostrar. Solo de lectura en el JSON. */
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    public String getNombreCompleto() {
+        return ((nombres == null ? "" : nombres) + " " + (apellidos == null ? "" : apellidos)).trim();
     }
 
     public String getTelefono() {

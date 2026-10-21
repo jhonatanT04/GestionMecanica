@@ -27,16 +27,43 @@ public class ClienteService {
 
     public Cliente crear(Cliente cliente) {
         cliente.setId(null);
+        normalizar(cliente);
+        if (clienteRepository.existsByCedula(cliente.getCedula())) {
+            throw new IllegalArgumentException("Ya existe un cliente con la cédula " + cliente.getCedula());
+        }
         return clienteRepository.save(cliente);
     }
 
     public Cliente actualizar(Long id, Cliente datos) {
         Cliente cliente = obtener(id);
-        cliente.setNombre(datos.getNombre());
+        normalizar(datos);
+        if (clienteRepository.existsByCedulaAndIdNot(datos.getCedula(), id)) {
+            throw new IllegalArgumentException("Ya existe otro cliente con la cédula " + datos.getCedula());
+        }
+        cliente.setNombres(datos.getNombres());
+        cliente.setApellidos(datos.getApellidos());
+        cliente.setCedula(datos.getCedula());
         cliente.setTelefono(datos.getTelefono());
         cliente.setEmail(datos.getEmail());
         cliente.setDireccion(datos.getDireccion());
         return clienteRepository.save(cliente);
+    }
+
+    private static void normalizar(Cliente cliente) {
+        cliente.setNombres(colapsarEspacios(cliente.getNombres()));
+        cliente.setApellidos(colapsarEspacios(cliente.getApellidos()));
+        String cedula = cliente.getCedula() == null ? "" : cliente.getCedula().replaceAll("[\\s-]", "");
+        if (cedula.isEmpty()) {
+            throw new IllegalArgumentException("La cédula del cliente es obligatoria");
+        }
+        if (!CedulaEcuador.esValida(cedula)) {
+            throw new IllegalArgumentException("La cédula " + cedula + " no es válida");
+        }
+        cliente.setCedula(cedula);
+    }
+
+    private static String colapsarEspacios(String texto) {
+        return texto == null ? null : texto.trim().replaceAll("\\s+", " ");
     }
 
     public void eliminar(Long id) {
