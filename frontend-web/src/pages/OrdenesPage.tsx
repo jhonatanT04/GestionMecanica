@@ -44,7 +44,7 @@ export function OrdenesPage() {
                 <td className="px-4 py-4 font-medium text-slate-900">
                   {orden.vehiculo.marca?.nombre} {orden.vehiculo.modelo} · {orden.vehiculo.placa}
                 </td>
-                <td className="px-4 py-4 text-slate-600">{orden.vehiculo.cliente.nombre}</td>
+                <td className="px-4 py-4 text-slate-600">{orden.vehiculo.cliente.nombreCompleto}</td>
                 <td className="px-4 py-4 text-slate-600">{orden.problemaReportado}</td>
                 <td className="px-4 py-4 text-slate-600">{orden.mecanicoAsignado?.nombre ?? 'Sin asignar'}</td>
                 <td className="px-4 py-4 tabular-nums text-slate-600">{orden.fechaEntrada}</td>

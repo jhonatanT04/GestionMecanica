@@ -30,7 +30,7 @@ function mesActual(): string {
 
 function coincide(factura: Factura, texto: string): boolean {
   const v = factura.orden?.vehiculo
-  return [factura.numero, v?.placa, v?.cliente.nombre, v?.marca?.nombre, v?.modelo]
+  return [factura.numero, v?.placa, v?.cliente.nombreCompleto, v?.cliente.cedula, v?.marca?.nombre, v?.modelo]
     .filter(Boolean)
     .some((campo) => campo!.toLowerCase().includes(texto))
 }
@@ -154,7 +154,7 @@ export function FacturasPage() {
                     {f.numero}
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap text-slate-600 tabular-nums">{f.fecha}</td>
-                  <td className="px-4 py-3 text-slate-600">{v?.cliente.nombre ?? '-'}</td>
+                  <td className="px-4 py-3 text-slate-600">{v?.cliente.nombreCompleto ?? '-'}</td>
                   <td className="px-4 py-3 text-slate-600">
                     {v ? (
                       <>

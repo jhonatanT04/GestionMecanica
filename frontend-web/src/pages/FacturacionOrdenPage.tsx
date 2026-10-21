@@ -135,7 +135,7 @@ function FacturacionOrden({ ordenId }: { ordenId: number }) {
         />
         {v && (
           <p className="text-sm text-slate-500">
-            {v.marca?.nombre} {v.modelo} · {v.placa} · {v.cliente.nombre}
+            {v.marca?.nombre} {v.modelo} · {v.placa} · {v.cliente.nombreCompleto}
           </p>
         )}
       </div>

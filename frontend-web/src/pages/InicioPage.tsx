@@ -317,7 +317,7 @@ function OrdenesEnCurso({
                 </p>
                 <p className="text-xs text-slate-500">{orden.vehiculo.placa}</p>
               </td>
-              <td className="px-3 py-3 text-slate-600">{orden.vehiculo.cliente.nombre}</td>
+              <td className="px-3 py-3 text-slate-600">{orden.vehiculo.cliente.nombreCompleto}</td>
               <td className="px-3 py-3 text-slate-600">{orden.mecanicoAsignado?.nombre ?? 'Sin asignar'}</td>
               <td className="px-3 py-3 whitespace-nowrap text-slate-600 tabular-nums">
                 {FECHA.format(new Date(`${orden.fechaEntrada.slice(0, 10)}T12:00:00`))}
