@@ -75,7 +75,7 @@ class _VehiculoFormScreenState extends State<VehiculoFormScreen> {
           key: _formKey,
           child: ListView(
             children: [
-              Text('Propietario: ${widget.cliente.nombre}'),
+              Text('Propietario: ${widget.cliente.nombreCompleto}'),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _placaController,

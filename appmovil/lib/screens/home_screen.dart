@@ -764,7 +764,7 @@ class _VehiculoCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      '${orden.vehiculo.placa} · ${orden.vehiculo.cliente.nombre}',
+                      '${orden.vehiculo.placa} · ${orden.vehiculo.cliente.nombreCompleto}',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
@@ -891,7 +891,7 @@ class _DetalleOrden extends StatelessWidget {
             _Dato(
               icono: Icons.person_outline,
               titulo: 'Cliente',
-              valor: v.cliente.nombre,
+              valor: v.cliente.nombreCompleto,
             ),
             if (v.cliente.telefono.isNotEmpty)
               _Dato(

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/cliente.dart';
 import '../services/api_client.dart';
 import '../services/service_locator.dart';
+import '../utils/cedula.dart';
 
 class ClienteFormScreen extends StatefulWidget {
   const ClienteFormScreen({super.key});
@@ -13,7 +14,9 @@ class ClienteFormScreen extends StatefulWidget {
 
 class _ClienteFormScreenState extends State<ClienteFormScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _nombreController = TextEditingController();
+  final _nombresController = TextEditingController();
+  final _apellidosController = TextEditingController();
+  final _cedulaController = TextEditingController();
   final _telefonoController = TextEditingController();
   final _emailController = TextEditingController();
   final _direccionController = TextEditingController();
@@ -25,7 +28,9 @@ class _ClienteFormScreenState extends State<ClienteFormScreen> {
     try {
       final cliente = await clienteService.crear(
         Cliente(
-          nombre: _nombreController.text.trim(),
+          nombres: _nombresController.text.trim(),
+          apellidos: _apellidosController.text.trim(),
+          cedula: limpiarCedula(_cedulaController.text),
           telefono: _telefonoController.text.trim(),
           email: _emailController.text.trim(),
           direccion: _direccionController.text.trim(),
@@ -36,9 +41,7 @@ class _ClienteFormScreenState extends State<ClienteFormScreen> {
     } on ApiException catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('No se pudo crear el cliente (${e.statusCode})'),
-        ),
+        SnackBar(content: Text('No se pudo crear el cliente: ${e.message}')),
       );
       setState(() => _guardando = false);
     } catch (_) {
@@ -61,10 +64,34 @@ class _ClienteFormScreenState extends State<ClienteFormScreen> {
           child: ListView(
             children: [
               TextFormField(
-                controller: _nombreController,
-                decoration: const InputDecoration(labelText: 'Nombre'),
+                controller: _nombresController,
+                decoration: const InputDecoration(labelText: 'Nombres'),
+                textCapitalization: TextCapitalization.words,
                 validator: (v) =>
                     (v == null || v.trim().isEmpty) ? 'Requerido' : null,
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _apellidosController,
+                decoration: const InputDecoration(labelText: 'Apellidos'),
+                textCapitalization: TextCapitalization.words,
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Requerido' : null,
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _cedulaController,
+                decoration: const InputDecoration(
+                  labelText: 'Cédula',
+                  helperText: '10 dígitos',
+                ),
+                keyboardType: TextInputType.number,
+                maxLength: 11,
+                validator: (v) {
+                  final cedula = limpiarCedula(v ?? '');
+                  if (cedula.isEmpty) return 'Requerido';
+                  return esCedulaValida(cedula) ? null : 'Cédula no válida';
+                },
               ),
               const SizedBox(height: 12),
               TextFormField(

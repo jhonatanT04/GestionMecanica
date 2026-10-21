@@ -8,7 +8,9 @@ import 'package:appmovil/models/vehiculo.dart';
 
 const _cliente = Cliente(
   id: 1,
-  nombre: 'Rosa',
+  nombres: 'Rosa',
+  apellidos: 'Guamán',
+  cedula: '',
   telefono: '',
   email: '',
   direccion: '',

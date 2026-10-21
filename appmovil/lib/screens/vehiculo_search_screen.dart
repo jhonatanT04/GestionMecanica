@@ -86,7 +86,7 @@ class _VehiculoSearchScreenState extends State<VehiculoSearchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.cliente.nombre),
+        title: Text(widget.cliente.nombreCompleto),
         bottom: const FlowSteps(actual: PasoRegistro.vehiculo),
       ),
       body: Padding(

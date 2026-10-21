@@ -105,7 +105,7 @@ class _OrdenFormScreenState extends State<OrdenFormScreen> {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              '${v.placa} · ${v.cliente.nombre}',
+                              '${v.placa} · ${v.cliente.nombreCompleto}',
                               style: const TextStyle(
                                 color: AppColors.textMuted,
                                 fontSize: 13,

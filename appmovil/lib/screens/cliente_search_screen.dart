@@ -75,7 +75,8 @@ class _ClienteSearchScreenState extends State<ClienteSearchScreen> {
         : _clientes
               .where(
                 (c) =>
-                    c.nombre.toLowerCase().contains(filtroLower) ||
+                    c.nombreCompleto.toLowerCase().contains(filtroLower) ||
+                    c.cedula.contains(filtroLower) ||
                     c.telefono.toLowerCase().contains(filtroLower),
               )
               .toList();
@@ -91,7 +92,7 @@ class _ClienteSearchScreenState extends State<ClienteSearchScreen> {
             padding: const EdgeInsets.all(16),
             child: TextField(
               decoration: const InputDecoration(
-                labelText: 'Buscar cliente por nombre o teléfono',
+                labelText: 'Buscar por nombre, cédula o teléfono',
                 prefixIcon: Icon(Icons.search),
               ),
               onChanged: (v) => setState(() => _filtro = v),
@@ -128,16 +129,21 @@ class _ClienteSearchScreenState extends State<ClienteSearchScreen> {
                           backgroundColor: AppColors.surfaceHigh,
                           foregroundColor: AppColors.text,
                           child: Text(
-                            c.nombre.isNotEmpty
-                                ? c.nombre[0].toUpperCase()
+                            c.nombreCompleto.isNotEmpty
+                                ? c.nombreCompleto[0].toUpperCase()
                                 : '?',
                           ),
                         ),
                         title: Text(
-                          c.nombre,
+                          c.nombreCompleto,
                           style: const TextStyle(fontWeight: FontWeight.w600),
                         ),
-                        subtitle: Text(c.telefono),
+                        subtitle: Text(
+                          [
+                            if (c.cedula.isNotEmpty) 'C.I. ${c.cedula}',
+                            if (c.telefono.isNotEmpty) c.telefono,
+                          ].join(' · '),
+                        ),
                         trailing: const Icon(Icons.chevron_right),
                         onTap: () => _continuarConCliente(c),
                       );

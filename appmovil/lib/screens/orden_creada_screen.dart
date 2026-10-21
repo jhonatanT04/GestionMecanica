@@ -77,7 +77,7 @@ class OrdenCreadaScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '${v.placa} · ${v.cliente.nombre}',
+                  '${v.placa} · ${v.cliente.nombreCompleto}',
                   textAlign: TextAlign.center,
                   style: const TextStyle(color: AppColors.textMuted),
                 ),
