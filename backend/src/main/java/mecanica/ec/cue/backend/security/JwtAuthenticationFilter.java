@@ -34,7 +34,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String token = header.substring(7);
             try {
                 Claims claims = jwtService.parseClaims(token);
-                String rol = claims.get("rol", String.class);
+                String rol = rolActual(claims.get("rol", String.class));
                 Long usuarioId = claims.get("usuarioId", Long.class);
                 List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + rol));
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(usuarioId,
@@ -46,5 +46,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         }
         filterChain.doFilter(request, response);
+    }
+
+    /**
+     * Tokens emitidos antes de V12 traen los nombres de rol anteriores; se
+     * traducen para no forzar un re-login. Puede quitarse cuando esos tokens
+     * hayan expirado (jwt.expiration-ms).
+     */
+    private static String rolActual(String rol) {
+        if ("DUENO".equals(rol)) {
+            return "ADMIN";
+        }
+        if ("RECEPCIONISTA".equals(rol)) {
+            return "CAJA";
+        }
+        return rol;
     }
 }

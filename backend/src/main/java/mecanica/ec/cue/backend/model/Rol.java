@@ -1,7 +1,9 @@
 package mecanica.ec.cue.backend.model;
 
 public enum Rol {
-    DUENO,
+    /** Administra el taller: usuarios, reportes, marcas, configuración. */
+    ADMIN,
     MECANICO,
-    RECEPCIONISTA
+    /** Cobra: factura y registra pagos. */
+    CAJA
 }

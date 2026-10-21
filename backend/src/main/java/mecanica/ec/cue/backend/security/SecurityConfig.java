@@ -44,18 +44,24 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/usuarios").hasRole("DUENO")
-                        .requestMatchers(HttpMethod.GET, "/api/usuarios").hasRole("DUENO")
-                        .requestMatchers("/api/reportes/**").hasRole("DUENO")
-                        // La tarifa vigente la lee cualquiera; el historial y los cambios, solo el dueño.
+                        .requestMatchers(HttpMethod.POST, "/api/usuarios").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/usuarios").hasRole("ADMIN")
+                        .requestMatchers("/api/reportes/**").hasRole("ADMIN")
+                        // La tarifa vigente la lee cualquiera; el historial y los cambios, solo el admin.
                         .requestMatchers(HttpMethod.GET, "/api/configuracion/iva").authenticated()
-                        .requestMatchers("/api/configuracion/**").hasRole("DUENO")
-                        // Facturar y cobrar: el dueño y recepción (el mecánico solo carga items).
-                        .requestMatchers(HttpMethod.POST, "/api/ordenes/*/factura").hasAnyRole("DUENO", "RECEPCIONISTA")
-                        .requestMatchers(HttpMethod.PATCH, "/api/facturas/*/pagar").hasAnyRole("DUENO", "RECEPCIONISTA")
-                        .requestMatchers(HttpMethod.POST, "/api/marcas/**").hasRole("DUENO")
-                        .requestMatchers(HttpMethod.PUT, "/api/marcas/**").hasRole("DUENO")
-                        .requestMatchers(HttpMethod.DELETE, "/api/marcas/**").hasRole("DUENO")
+                        .requestMatchers("/api/configuracion/**").hasRole("ADMIN")
+                        // Facturar, cobrar y ver facturas: admin y caja. El mecánico solo carga items;
+                        // sí puede consultar si una orden ya está facturada (GET /api/ordenes/{id}/factura).
+                        .requestMatchers(HttpMethod.POST, "/api/ordenes/*/factura").hasAnyRole("ADMIN", "CAJA")
+                        .requestMatchers("/api/facturas/**").hasAnyRole("ADMIN", "CAJA")
+                        // Inventario: el mecánico solo lee productos (para elegir repuestos en una orden);
+                        // crear/editar productos y los movimientos son de admin y caja.
+                        .requestMatchers(HttpMethod.GET, "/api/productos/**").authenticated()
+                        .requestMatchers("/api/productos/**").hasAnyRole("ADMIN", "CAJA")
+                        .requestMatchers("/api/movimientos-inventario/**").hasAnyRole("ADMIN", "CAJA")
+                        .requestMatchers(HttpMethod.POST, "/api/marcas/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/marcas/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/marcas/**").hasRole("ADMIN")
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().permitAll())
                 .exceptionHandling(handling -> handling

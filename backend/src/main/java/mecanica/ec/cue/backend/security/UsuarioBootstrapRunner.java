@@ -39,7 +39,7 @@ public class UsuarioBootstrapRunner implements ApplicationRunner {
         admin.setNombre("Administrador");
         admin.setEmail(bootstrapEmail);
         admin.setPassword(passwordEncoder.encode(bootstrapPassword));
-        admin.setRol(Rol.DUENO);
+        admin.setRol(Rol.ADMIN);
         usuarioRepository.save(admin);
     }
 }
