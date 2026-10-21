@@ -17,7 +17,7 @@ void main() {
   testWidgets('Va directo a Home si ya hay una sesión guardada', (WidgetTester tester) async {
     SharedPreferences.setMockInitialValues({
       'auth_token': 'token-de-prueba',
-      'auth_usuario': '{"id":1,"nombre":"Ana","email":"ana@taller.com","rol":"RECEPCIONISTA"}',
+      'auth_usuario': '{"id":1,"nombre":"Ana","email":"ana@taller.com","rol":"CAJA"}',
     });
 
     await tester.pumpWidget(const MecanicaSaasApp());

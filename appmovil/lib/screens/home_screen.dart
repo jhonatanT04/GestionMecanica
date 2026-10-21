@@ -13,9 +13,12 @@ import 'login_screen.dart';
 import 'settings_screen.dart';
 
 const _rolLabels = {
-  'DUENO': 'Dueño',
+  'ADMIN': 'Administrador',
   'MECANICO': 'Mecánico',
-  'RECEPCIONISTA': 'Recepción',
+  'CAJA': 'Caja',
+  // Sesiones guardadas antes del cambio de roles.
+  'DUENO': 'Administrador',
+  'RECEPCIONISTA': 'Caja',
 };
 
 class HomeScreen extends StatefulWidget {
