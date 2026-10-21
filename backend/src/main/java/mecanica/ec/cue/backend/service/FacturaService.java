@@ -20,18 +20,17 @@ import mecanica.ec.cue.backend.repository.OrdenDeTrabajoRepository;
 @Service
 public class FacturaService {
 
-    /** Tarifa de IVA vigente en Ecuador. Único lugar a actualizar ante una futura reforma tributaria. */
-    private static final BigDecimal PORCENTAJE_IVA = new BigDecimal("0.15");
-
     private final FacturaRepository facturaRepository;
     private final OrdenDeTrabajoRepository ordenDeTrabajoRepository;
     private final ItemOrdenRepository itemOrdenRepository;
+    private final TarifaIvaService tarifaIvaService;
 
     public FacturaService(FacturaRepository facturaRepository, OrdenDeTrabajoRepository ordenDeTrabajoRepository,
-            ItemOrdenRepository itemOrdenRepository) {
+            ItemOrdenRepository itemOrdenRepository, TarifaIvaService tarifaIvaService) {
         this.facturaRepository = facturaRepository;
         this.ordenDeTrabajoRepository = ordenDeTrabajoRepository;
         this.itemOrdenRepository = itemOrdenRepository;
+        this.tarifaIvaService = tarifaIvaService;
     }
 
     @Transactional
@@ -47,27 +46,38 @@ public class FacturaService {
             throw new IllegalArgumentException("La orden " + ordenId + " no tiene items para facturar");
         }
 
-        BigDecimal subtotalRepuestos = items.stream()
+        LocalDate hoy = LocalDate.now();
+        // La tarifa sale de Configuración (la que rige hoy), no del código.
+        BigDecimal porcentajeIva = tarifaIvaService.vigenteEn(hoy).getPorcentaje();
+        BigDecimal factorIva = BigDecimal.ONE.add(porcentajeIva.movePointLeft(2));
+
+        // Los precios de los items ya incluyen IVA: el total es su suma y los
+        // subtotales son la base imponible (precio / (1 + tarifa)). El IVA es la
+        // diferencia, así subtotales + IVA cuadran exacto con el total.
+        BigDecimal totalRepuestos = items.stream()
                 .filter(item -> item.getTipo() == TipoItem.REPUESTO || item.getTipo() == TipoItem.REPUESTO_EXTERNO)
                 .map(item -> item.getPrecioUnitario().multiply(BigDecimal.valueOf(item.getCantidad())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        BigDecimal subtotalManoObra = items.stream()
+        BigDecimal totalManoObra = items.stream()
                 .filter(item -> item.getTipo() == TipoItem.MANO_DE_OBRA)
                 .map(ItemOrden::getCosto)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        BigDecimal subtotal = subtotalRepuestos.add(subtotalManoObra);
-        BigDecimal iva = subtotal.multiply(PORCENTAJE_IVA).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal total = totalRepuestos.add(totalManoObra).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal subtotalRepuestos = sinIva(totalRepuestos, factorIva);
+        BigDecimal subtotalManoObra = sinIva(totalManoObra, factorIva);
+        BigDecimal iva = total.subtract(subtotalRepuestos).subtract(subtotalManoObra);
 
         Factura factura = new Factura();
         factura.setNumero(generarNumero());
-        factura.setFecha(LocalDate.now());
+        factura.setFecha(hoy);
         factura.setOrden(orden);
         factura.setSubtotalRepuestos(subtotalRepuestos);
         factura.setSubtotalManoObra(subtotalManoObra);
         factura.setIva(iva);
-        factura.setTotal(subtotal.add(iva));
+        factura.setPorcentajeIva(porcentajeIva);
+        factura.setTotal(total);
         factura.setEstado(EstadoFactura.PENDIENTE);
         return facturaRepository.save(factura);
     }
@@ -91,6 +101,11 @@ public class FacturaService {
         factura.setEstado(EstadoFactura.PAGADA);
         factura.setFechaPago(LocalDate.now());
         return facturaRepository.save(factura);
+    }
+
+    /** Base imponible de un monto que ya trae el IVA incluido. */
+    private static BigDecimal sinIva(BigDecimal montoConIva, BigDecimal factorIva) {
+        return montoConIva.divide(factorIva, 2, RoundingMode.HALF_UP);
     }
 
     private String generarNumero() {

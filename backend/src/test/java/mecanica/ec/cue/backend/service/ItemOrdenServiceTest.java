@@ -99,6 +99,46 @@ class ItemOrdenServiceTest {
         verify(itemOrdenRepository, never()).save(any());
     }
 
+    private ItemOrden manoDeObra(String descripcion, String precio) {
+        ItemOrden item = new ItemOrden();
+        item.setTipo(TipoItem.MANO_DE_OBRA);
+        item.setDescripcion(descripcion);
+        item.setPrecioUnitario(precio == null ? null : new BigDecimal(precio));
+        return item;
+    }
+
+    @Test
+    void manoDeObraUsaElPrecioComoCostoSinCantidad() {
+        when(facturaRepository.findByOrdenId(7L)).thenReturn(Optional.empty());
+        when(itemOrdenRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        ItemOrden item = manoDeObra("  Cambio de pastillas  ", "37.50");
+        item.setCantidad(5);
+        item.setCosto(new BigDecimal("1"));
+        item.setProducto(new Producto());
+
+        ItemOrden guardado = service.crear(7L, item);
+
+        assertThat(guardado.getDescripcion()).isEqualTo("Cambio de pastillas");
+        assertThat(guardado.getCantidad()).isEqualTo(1);
+        assertThat(guardado.getCosto()).isEqualByComparingTo("37.50");
+        assertThat(guardado.getProducto()).isNull();
+        verifyNoInteractions(productoService, movimientoInventarioService);
+    }
+
+    @Test
+    void manoDeObraExigeDescripcionYPrecio() {
+        when(facturaRepository.findByOrdenId(7L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> service.crear(7L, manoDeObra(" ", "10")))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> service.crear(7L, manoDeObra("Alineación", "0")))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> service.crear(7L, manoDeObra("Alineación", null)))
+                .isInstanceOf(IllegalArgumentException.class);
+        verify(itemOrdenRepository, never()).save(any());
+    }
+
     @Test
     void noSePuedenAgregarItemsAUnaOrdenFacturada() {
         when(facturaRepository.findByOrdenId(7L)).thenReturn(Optional.of(new Factura()));

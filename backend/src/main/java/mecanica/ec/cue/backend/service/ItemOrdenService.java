@@ -83,12 +83,18 @@ public class ItemOrdenService {
             return itemOrdenRepository.save(item);
         }
 
-        if (item.getCosto() == null) {
-            throw new IllegalArgumentException("Debe indicar el costo para un item de tipo MANO_DE_OBRA");
+        if (item.getDescripcion() == null || item.getDescripcion().isBlank()) {
+            throw new IllegalArgumentException("Debe describir el trabajo de mano de obra");
         }
+        if (item.getPrecioUnitario() == null || item.getPrecioUnitario().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("El precio de la mano de obra debe ser mayor a cero");
+        }
+        item.setDescripcion(item.getDescripcion().trim());
+        // La mano de obra se cobra por trabajo, sin cantidad: queda fija en 1 y costo
+        // (el subtotal que suma FacturaService) es el precio.
+        item.setCantidad(1);
+        item.setCosto(item.getPrecioUnitario());
         item.setProducto(null);
-        item.setCantidad(null);
-        item.setPrecioUnitario(null);
         item.setProveedor(null);
         return itemOrdenRepository.save(item);
     }

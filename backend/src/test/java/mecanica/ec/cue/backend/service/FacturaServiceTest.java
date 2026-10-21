@@ -21,6 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import mecanica.ec.cue.backend.model.Factura;
 import mecanica.ec.cue.backend.model.ItemOrden;
 import mecanica.ec.cue.backend.model.OrdenDeTrabajo;
+import mecanica.ec.cue.backend.model.TarifaIva;
 import mecanica.ec.cue.backend.model.TipoItem;
 import mecanica.ec.cue.backend.repository.FacturaRepository;
 import mecanica.ec.cue.backend.repository.ItemOrdenRepository;
@@ -35,6 +36,8 @@ class FacturaServiceTest {
     OrdenDeTrabajoRepository ordenDeTrabajoRepository;
     @Mock
     ItemOrdenRepository itemOrdenRepository;
+    @Mock
+    TarifaIvaService tarifaIvaService;
 
     @InjectMocks
     FacturaService service;
@@ -45,6 +48,12 @@ class FacturaServiceTest {
         orden.setId(7L);
         when(ordenDeTrabajoRepository.findById(7L)).thenReturn(Optional.of(orden));
         when(facturaRepository.findByOrdenId(7L)).thenReturn(Optional.empty());
+    }
+
+    private void tarifa(String porcentaje) {
+        TarifaIva tarifa = new TarifaIva();
+        tarifa.setPorcentaje(new BigDecimal(porcentaje));
+        when(tarifaIvaService.vigenteEn(any())).thenReturn(tarifa);
     }
 
     private static ItemOrden repuesto(TipoItem tipo, int cantidad, String precio) {
@@ -63,19 +72,38 @@ class FacturaServiceTest {
     }
 
     @Test
-    void losRepuestosExternosSumanAlSubtotalDeRepuestos() {
+    void losPreciosIncluyenIvaYElTotalEsLaSumaDeLosItems() {
         when(itemOrdenRepository.findByOrdenId(7L)).thenReturn(List.of(
                 repuesto(TipoItem.REPUESTO, 2, "10.00"),
                 repuesto(TipoItem.REPUESTO_EXTERNO, 3, "15.50"),
                 manoDeObra("40.00")));
         when(facturaRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+        tarifa("15.00");
 
         Factura factura = service.generar(7L);
 
-        assertThat(factura.getSubtotalRepuestos()).isEqualByComparingTo("66.50");
-        assertThat(factura.getSubtotalManoObra()).isEqualByComparingTo("40.00");
-        assertThat(factura.getIva()).isEqualByComparingTo("15.98");
-        assertThat(factura.getTotal()).isEqualByComparingTo("122.48");
+        assertThat(factura.getPorcentajeIva()).isEqualByComparingTo("15.00");
+        // 20.00 + 46.50 + 40.00 = 106.50 con IVA incluido.
+        assertThat(factura.getTotal()).isEqualByComparingTo("106.50");
+        assertThat(factura.getSubtotalRepuestos()).isEqualByComparingTo("57.83"); // 66.50 / 1.15
+        assertThat(factura.getSubtotalManoObra()).isEqualByComparingTo("34.78"); // 40.00 / 1.15
+        assertThat(factura.getIva()).isEqualByComparingTo("13.89");
+        assertThat(factura.getSubtotalRepuestos().add(factura.getSubtotalManoObra()).add(factura.getIva()))
+                .isEqualByComparingTo(factura.getTotal());
+    }
+
+    @Test
+    void usaLaTarifaConfiguradaYLaGuardaEnLaFactura() {
+        when(itemOrdenRepository.findByOrdenId(7L)).thenReturn(List.of(manoDeObra("112.00")));
+        when(facturaRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+        tarifa("12.00");
+
+        Factura factura = service.generar(7L);
+
+        assertThat(factura.getPorcentajeIva()).isEqualByComparingTo("12.00");
+        assertThat(factura.getSubtotalManoObra()).isEqualByComparingTo("100.00");
+        assertThat(factura.getIva()).isEqualByComparingTo("12.00");
+        assertThat(factura.getTotal()).isEqualByComparingTo("112.00");
     }
 
     @Test

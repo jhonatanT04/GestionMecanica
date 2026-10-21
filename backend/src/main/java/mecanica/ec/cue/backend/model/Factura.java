@@ -49,6 +49,11 @@ public class Factura {
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal iva;
 
+    /** Tarifa con la que se emitió (15.00 = 15%); no cambia si luego cambia la ley. */
+    @NotNull
+    @Column(nullable = false, precision = 5, scale = 2)
+    private BigDecimal porcentajeIva;
+
     @NotNull
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal total;
@@ -120,6 +125,14 @@ public class Factura {
 
     public void setIva(BigDecimal iva) {
         this.iva = iva;
+    }
+
+    public BigDecimal getPorcentajeIva() {
+        return porcentajeIva;
+    }
+
+    public void setPorcentajeIva(BigDecimal porcentajeIva) {
+        this.porcentajeIva = porcentajeIva;
     }
 
     public BigDecimal getTotal() {

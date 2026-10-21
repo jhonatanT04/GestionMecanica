@@ -47,6 +47,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/usuarios").hasRole("DUENO")
                         .requestMatchers(HttpMethod.GET, "/api/usuarios").hasRole("DUENO")
                         .requestMatchers("/api/reportes/**").hasRole("DUENO")
+                        // La tarifa vigente la lee cualquiera; el historial y los cambios, solo el dueño.
+                        .requestMatchers(HttpMethod.GET, "/api/configuracion/iva").authenticated()
+                        .requestMatchers("/api/configuracion/**").hasRole("DUENO")
                         // Facturar y cobrar: el dueño y recepción (el mecánico solo carga items).
                         .requestMatchers(HttpMethod.POST, "/api/ordenes/*/factura").hasAnyRole("DUENO", "RECEPCIONISTA")
                         .requestMatchers(HttpMethod.PATCH, "/api/facturas/*/pagar").hasAnyRole("DUENO", "RECEPCIONISTA")
