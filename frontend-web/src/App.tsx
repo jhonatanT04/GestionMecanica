@@ -12,6 +12,7 @@ import { ReportesPage } from './pages/ReportesPage'
 import { MarcasPage } from './pages/MarcasPage'
 import { FacturacionOrdenPage } from './pages/FacturacionOrdenPage'
 import { FacturasPage } from './pages/FacturasPage'
+import { ConfiguracionPage } from './pages/ConfiguracionPage'
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
             <Route path="/empleados" element={<EmpleadosPage />} />
             <Route path="/reportes" element={<ReportesPage />} />
             <Route path="/marcas" element={<MarcasPage />} />
+            <Route path="/configuracion" element={<ConfiguracionPage />} />
           </Route>
         </Route>
       </Route>

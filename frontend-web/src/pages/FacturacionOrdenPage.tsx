@@ -4,6 +4,7 @@ import { ArrowLeft, Trash } from '@phosphor-icons/react'
 import { useAuth } from '../auth/useAuth'
 import { useAsyncData } from '../hooks/useAsyncData'
 import { obtenerOrden } from '../services/ordenesService'
+import { obtenerIvaVigente } from '../services/configuracionService'
 import { listarInventario } from '../services/inventarioService'
 import {
   agregarItem,
@@ -23,8 +24,6 @@ import { Modal } from '../components/ui/Modal'
 import { Th, TableHead, TableLoadingRow, TableStatusRow } from '../components/ui/Table'
 import type { Factura, ItemOrden, ItemOrdenInput, RolUsuario, TipoItem } from '../types'
 
-/** Debe coincidir con FacturaService.PORCENTAJE_IVA; el backend calcula el valor definitivo. */
-const PORCENTAJE_IVA = 0.15
 const ROLES_QUE_FACTURAN: RolUsuario[] = ['DUENO', 'RECEPCIONISTA']
 const CURRENCY = new Intl.NumberFormat('es-EC', { style: 'currency', currency: 'USD' })
 const COLUMN_COUNT = 6
@@ -42,11 +41,20 @@ function subtotalItem(item: ItemOrden): number {
   return (item.precioUnitario ?? 0) * (item.cantidad ?? 0)
 }
 
-function totalesPrevios(items: ItemOrden[]) {
-  const repuestos = round2(items.filter((i) => i.tipo !== 'MANO_DE_OBRA').reduce((s, i) => s + subtotalItem(i), 0))
-  const manoObra = round2(items.filter((i) => i.tipo === 'MANO_DE_OBRA').reduce((s, i) => s + subtotalItem(i), 0))
-  const iva = round2((repuestos + manoObra) * PORCENTAJE_IVA)
-  return { repuestos, manoObra, iva, total: round2(repuestos + manoObra + iva) }
+/**
+ * Igual que FacturaService.generar: los precios de los items ya incluyen IVA, el
+ * total es su suma, los subtotales son sin IVA y el IVA es la diferencia.
+ * `porcentajeIva` es la tarifa vigente de Configuración (15 = 15%); el backend
+ * calcula el valor definitivo al generar.
+ */
+function totalesPrevios(items: ItemOrden[], porcentajeIva: number) {
+  const factor = 1 + porcentajeIva / 100
+  const conIvaRepuestos = items.filter((i) => i.tipo !== 'MANO_DE_OBRA').reduce((s, i) => s + subtotalItem(i), 0)
+  const conIvaManoObra = items.filter((i) => i.tipo === 'MANO_DE_OBRA').reduce((s, i) => s + subtotalItem(i), 0)
+  const total = round2(conIvaRepuestos + conIvaManoObra)
+  const repuestos = round2(conIvaRepuestos / factor)
+  const manoObra = round2(conIvaManoObra / factor)
+  return { repuestos, manoObra, iva: round2(total - repuestos - manoObra), total }
 }
 
 export function FacturacionOrdenPage() {
@@ -62,13 +70,14 @@ function FacturacionOrden({ ordenId }: { ordenId: number }) {
   const orden = useAsyncData(() => obtenerOrden(ordenId))
   const items = useAsyncData(() => listarItems(ordenId))
   const factura = useAsyncData(() => obtenerFacturaDeOrden(ordenId))
+  const tarifaIva = useAsyncData(obtenerIvaVigente)
 
   const [accionError, setAccionError] = useState<Error | null>(null)
   const [confirmando, setConfirmando] = useState(false)
   const [procesando, setProcesando] = useState(false)
 
   const facturada = factura.data != null
-  const error = orden.error ?? items.error ?? factura.error
+  const error = orden.error ?? items.error ?? factura.error ?? tarifaIva.error
 
   async function handleEliminar(itemId: number) {
     setAccionError(null)
@@ -150,8 +159,8 @@ function FacturacionOrden({ ordenId }: { ordenId: number }) {
                     <Th className="pl-5 lg:pl-6">Concepto</Th>
                     <Th>Tipo</Th>
                     <Th className="text-right">Cant.</Th>
-                    <Th className="text-right">P. unitario</Th>
-                    <Th className="text-right">Subtotal</Th>
+                    <Th className="text-right">P. unit. con IVA</Th>
+                    <Th className="text-right">Importe</Th>
                     <Th className="pr-5 lg:pr-6">
                       <span className="sr-only">Acciones</span>
                     </Th>
@@ -180,7 +189,9 @@ function FacturacionOrden({ ordenId }: { ordenId: number }) {
                         )}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-slate-600">{TIPO_LABELS[item.tipo]}</td>
-                      <td className="px-4 py-3 text-right text-slate-600 tabular-nums">{item.cantidad ?? '-'}</td>
+                      <td className="px-4 py-3 text-right text-slate-600 tabular-nums">
+                        {item.tipo === 'MANO_DE_OBRA' ? '-' : (item.cantidad ?? '-')}
+                      </td>
                       <td className="px-4 py-3 text-right text-slate-600 tabular-nums">
                         {item.precioUnitario != null ? CURRENCY.format(item.precioUnitario) : '-'}
                       </td>
@@ -215,8 +226,9 @@ function FacturacionOrden({ ordenId }: { ordenId: number }) {
         <div className="flex min-w-0 flex-col gap-6">
           <FacturaCard
             factura={factura.data ?? null}
-            loading={factura.loading || items.loading}
+            loading={factura.loading || items.loading || tarifaIva.loading}
             items={items.data ?? []}
+            porcentajeVigente={tarifaIva.data?.porcentaje ?? null}
             puedeFacturar={puedeFacturar}
             procesando={procesando}
             onGenerar={() => setConfirmando(true)}
@@ -230,7 +242,7 @@ function FacturacionOrden({ ordenId }: { ordenId: number }) {
           <p className="text-sm text-slate-600">
             Se emitirá la factura por{' '}
             <span className="font-semibold text-slate-900">
-              {CURRENCY.format(totalesPrevios(items.data ?? []).total)}
+              {CURRENCY.format(totalesPrevios(items.data ?? [], tarifaIva.data?.porcentaje ?? 0).total)}
             </span>
             . Después de generarla ya no se podrán agregar ni quitar items de esta orden.
           </p>
@@ -252,6 +264,7 @@ function FacturaCard({
   factura,
   loading,
   items,
+  porcentajeVigente,
   puedeFacturar,
   procesando,
   onGenerar,
@@ -260,6 +273,7 @@ function FacturaCard({
   factura: Factura | null
   loading: boolean
   items: ItemOrden[]
+  porcentajeVigente: number | null
   puedeFacturar: boolean
   procesando: boolean
   onGenerar: () => void
@@ -276,9 +290,21 @@ function FacturaCard({
     )
   }
 
+  const porcentaje = factura ? factura.porcentajeIva : porcentajeVigente
+  if (porcentaje == null) {
+    return (
+      <Card>
+        <CardHeader title="Factura" />
+        <p className="text-sm text-slate-500">
+          No hay una tarifa de IVA vigente. El dueño debe registrarla en Configuración antes de facturar.
+        </p>
+      </Card>
+    )
+  }
+
   const totales = factura
     ? { repuestos: factura.subtotalRepuestos, manoObra: factura.subtotalManoObra, iva: factura.iva, total: factura.total }
-    : totalesPrevios(items)
+    : totalesPrevios(items, porcentaje)
 
   return (
     <Card>
@@ -300,13 +326,13 @@ function FacturaCard({
           </span>
         </div>
       ) : (
-        <CardHeader title="Factura" subtitle="Vista previa con los items actuales" />
+        <CardHeader title="Factura" subtitle="Vista previa; los precios de los items ya incluyen IVA" />
       )}
 
       <dl className="flex flex-col gap-2.5 text-sm">
-        <Fila label="Repuestos" value={totales.repuestos} />
-        <Fila label="Mano de obra" value={totales.manoObra} />
-        <Fila label={`IVA ${PORCENTAJE_IVA * 100}%`} value={totales.iva} />
+        <Fila label="Repuestos sin IVA" value={totales.repuestos} />
+        <Fila label="Mano de obra sin IVA" value={totales.manoObra} />
+        <Fila label={`IVA ${porcentaje}%`} value={totales.iva} />
         <div className="mt-1 flex items-baseline justify-between border-t border-slate-200 pt-3">
           <dt className="font-semibold text-slate-900">Total</dt>
           <dd className="text-xl font-semibold text-slate-900 tabular-nums">{CURRENCY.format(totales.total)}</dd>
@@ -388,7 +414,7 @@ function AgregarItemCard({ ordenId, onAgregado }: { ordenId: number; onAgregado:
         precioUnitario: Number(precio),
       }
     } else {
-      input = { tipo, descripcion: descripcion.trim(), costo: Number(precio) }
+      input = { tipo, descripcion: descripcion.trim(), precioUnitario: Number(precio) }
     }
 
     setGuardando(true)
@@ -501,7 +527,7 @@ function AgregarItemCard({ ordenId, onAgregado }: { ordenId: number; onAgregado:
                   className={INPUT_CLASS}
                 />
               </Field>
-              <Field label="Precio unitario al cliente">
+              <Field label="Precio unitario (con IVA)">
                 <input
                   required
                   type="number"
@@ -530,11 +556,11 @@ function AgregarItemCard({ ordenId, onAgregado }: { ordenId: number; onAgregado:
                 className={INPUT_CLASS}
               />
             </Field>
-            <Field label="Costo">
+            <Field label="Precio (con IVA)">
               <input
                 required
                 type="number"
-                min={0}
+                min="0.01"
                 step="0.01"
                 value={precio}
                 onChange={(e) => setPrecio(e.target.value)}

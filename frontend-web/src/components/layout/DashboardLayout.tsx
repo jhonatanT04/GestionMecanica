@@ -2,6 +2,7 @@ import { useState, type ComponentType } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import {
   Car,
+  GearSix,
   ChartBar,
   House,
   IdentificationBadge,
@@ -45,6 +46,7 @@ const NAV_SECTIONS: { title?: string; items: NavItem[] }[] = [
       { to: '/empleados', label: 'Empleados', icon: IdentificationBadge, roles: ['DUENO'] },
       { to: '/reportes', label: 'Reportes', icon: ChartBar, roles: ['DUENO'] },
       { to: '/marcas', label: 'Marcas', icon: Car, roles: ['DUENO'] },
+      { to: '/configuracion', label: 'Configuración', icon: GearSix, roles: ['DUENO'] },
     ],
   },
 ]
